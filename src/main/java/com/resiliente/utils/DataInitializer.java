@@ -31,8 +31,7 @@ public class DataInitializer {
             // ==================== ROLES ====================
             Rol adminRole = new Rol("ADMIN");
             Rol empleadoRole = new Rol("EMPLEADO");
-            Rol gerenteRole = new Rol("GERENTE");
-            Rol meseroRole = new Rol("MESERO");
+
 
             if (rolRepository.findByNombre("ADMIN").isEmpty()) {
                 rolRepository.saveAndFlush(adminRole);
@@ -46,17 +45,7 @@ public class DataInitializer {
                 empleadoRole = rolRepository.findByNombre("EMPLEADO").get();
             }
 
-            if (rolRepository.findByNombre("GERENTE").isEmpty()) {
-                rolRepository.saveAndFlush(gerenteRole);
-            } else {
-                gerenteRole = rolRepository.findByNombre("GERENTE").get();
-            }
 
-            if (rolRepository.findByNombre("MESERO").isEmpty()) {
-                rolRepository.saveAndFlush(meseroRole);
-            } else {
-                meseroRole = rolRepository.findByNombre("MESERO").get();
-            }
 
             // ==================== USUARIOS ====================
             if (usuarioRepository.findByEmail("admin@resiliente.com").isEmpty()) {
@@ -81,27 +70,9 @@ public class DataInitializer {
                 usuarioRepository.saveAndFlush(empleado);
             }
 
-            if (usuarioRepository.findByEmail("gerente@resiliente.com").isEmpty()) {
-                Usuario gerente = new Usuario();
-                gerente.setNombre("Gerente");
-                gerente.setApellido("Resiliente");
-                gerente.setRol(gerenteRole);
-                gerente.setNumeroEmpleado(3001);
-                gerente.setArea("Gerencia");
-                gerente.setEmail("gerente@resiliente.com");
-                usuarioRepository.saveAndFlush(gerente);
-            }
 
-            if (usuarioRepository.findByEmail("mesero@resiliente.com").isEmpty()) {
-                Usuario mesero = new Usuario();
-                mesero.setNombre("Mesero");
-                mesero.setApellido("Resiliente");
-                mesero.setRol(meseroRole);
-                mesero.setNumeroEmpleado(4001);
-                mesero.setArea("Atención al Cliente");
-                mesero.setEmail("mesero@resiliente.com");
-                usuarioRepository.saveAndFlush(mesero);
-            }
+
+
 
             // ==================== CONDICIONES ====================
             Condicion sordomudo = new Condicion();
@@ -112,9 +83,9 @@ public class DataInitializer {
             discapacidadAuditiva.setNombre("Discapacidad Auditiva");
             discapacidadAuditiva.setDescripcion("Persona con dificultad para escuchar");
 
-            Condicion discapacidadVisual = new Condicion();
-            discapacidadVisual.setNombre("Discapacidad Visual");
-            discapacidadVisual.setDescripcion("Persona con dificultad para ver");
+            Condicion discapacidadIntelectual = new Condicion();
+            discapacidadIntelectual.setNombre("Discapacidad Intelectual");
+            discapacidadIntelectual.setDescripcion("Persona con discapacidad intelectual");
 
             if (condicionRepository.findByNombre("Sordomudo").isEmpty()) {
                 condicionRepository.saveAndFlush(sordomudo);
@@ -128,10 +99,10 @@ public class DataInitializer {
                 discapacidadAuditiva = condicionRepository.findByNombre("Discapacidad Auditiva").get();
             }
 
-            if (condicionRepository.findByNombre("Discapacidad Visual").isEmpty()) {
-                condicionRepository.saveAndFlush(discapacidadVisual);
+            if (condicionRepository.findByNombre("Discapacidad Intelectual").isEmpty()) {
+                condicionRepository.saveAndFlush(discapacidadIntelectual);
             } else {
-                discapacidadVisual = condicionRepository.findByNombre("Discapacidad Visual").get();
+                discapacidadIntelectual = condicionRepository.findByNombre("Discapacidad Intelectual").get();
             }
 
             // ==================== SEÑAS ====================
@@ -262,8 +233,14 @@ public class DataInitializer {
             Mesero mesero3 = new Mesero();
             mesero3.setNombre("Luis Martínez");
             mesero3.setPresentacion("Mesero especializado en atención personalizada");
-            mesero3.setCondicion(discapacidadVisual);
+            mesero3.setCondicion(discapacidadIntelectual);
             mesero3.setEdad(30);
+
+            Mesero mesero4 = new Mesero();
+            mesero4.setNombre("María López");
+            mesero4.setPresentacion("Mesera con gran capacidad de aprendizaje");
+            mesero4.setCondicion(discapacidadIntelectual);
+            mesero4.setEdad(22);
 
             if (meseroRepository.findByNombre("Carlos Rodríguez").isEmpty()) {
                 meseroRepository.saveAndFlush(mesero1);
@@ -275,6 +252,10 @@ public class DataInitializer {
 
             if (meseroRepository.findByNombre("Luis Martínez").isEmpty()) {
                 meseroRepository.saveAndFlush(mesero3);
+            }
+
+            if (meseroRepository.findByNombre("María López").isEmpty()) {
+                meseroRepository.saveAndFlush(mesero4);
             }
 
 
