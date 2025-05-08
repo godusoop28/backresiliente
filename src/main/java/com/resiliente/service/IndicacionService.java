@@ -33,7 +33,23 @@ public class IndicacionService {
         this.senaRepository = senaRepository;
         this.productoRepository = productoRepository;
     }
+    @Transactional
+    public ResponseEntity<Object> eliminarIndicacionesPorProducto(Integer productoId) {
+        if (!productoRepository.existsById(productoId)) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("mensaje", "Producto no encontrado con ID: " + productoId);
+            response.put("tipo", "WARNING");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
 
+        // Delete all indicaciones for this product
+        indicacionRepository.deleteByProductoId(productoId);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("mensaje", "Indicaciones eliminadas exitosamente para el producto");
+        response.put("tipo", "SUCCESS");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
     @Transactional
     public ResponseEntity<Object> crearIndicacion(IndicacionDto indicacionDto) {
         // Verificar si existe la seña

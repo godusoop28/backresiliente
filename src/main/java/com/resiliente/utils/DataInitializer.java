@@ -277,42 +277,7 @@ public class DataInitializer {
                 meseroRepository.saveAndFlush(mesero3);
             }
 
-            // ==================== INDICACIONES ====================
-            // Verificar si ya existen indicaciones para evitar duplicados
-            if (indicacionRepository.findBySenaIdAndProductoId(senaCafe.getId(), cafeAmericano.getId()).isEmpty()) {
-                Indicacion indicacion1 = new Indicacion();
-                indicacion1.setSena(senaCafe);
-                indicacion1.setProducto(cafeAmericano);
-                indicacionRepository.saveAndFlush(indicacion1);
-            }
 
-            if (indicacionRepository.findBySenaIdAndProductoId(senaCafe.getId(), cafeConLeche.getId()).isEmpty()) {
-                Indicacion indicacion2 = new Indicacion();
-                indicacion2.setSena(senaCafe);
-                indicacion2.setProducto(cafeConLeche);
-                indicacionRepository.saveAndFlush(indicacion2);
-            }
-
-            if (indicacionRepository.findBySenaIdAndProductoId(senaTe.getId(), teVerde.getId()).isEmpty()) {
-                Indicacion indicacion3 = new Indicacion();
-                indicacion3.setSena(senaTe);
-                indicacion3.setProducto(teVerde);
-                indicacionRepository.saveAndFlush(indicacion3);
-            }
-
-            if (indicacionRepository.findBySenaIdAndProductoId(senaPastel.getId(), pastelChocolate.getId()).isEmpty()) {
-                Indicacion indicacion4 = new Indicacion();
-                indicacion4.setSena(senaPastel);
-                indicacion4.setProducto(pastelChocolate);
-                indicacionRepository.saveAndFlush(indicacion4);
-            }
-
-            if (indicacionRepository.findBySenaIdAndProductoId(senaSandwich.getId(), sandwichJamon.getId()).isEmpty()) {
-                Indicacion indicacion5 = new Indicacion();
-                indicacion5.setSena(senaSandwich);
-                indicacion5.setProducto(sandwichJamon);
-                indicacionRepository.saveAndFlush(indicacion5);
-            }
 
             // ==================== CANDIDATOS ====================
             if (candidatoRepository.findByEmail("juan.perez@ejemplo.com").isEmpty()) {

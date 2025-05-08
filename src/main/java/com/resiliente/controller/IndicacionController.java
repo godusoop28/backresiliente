@@ -22,7 +22,10 @@ public class IndicacionController {
     public ResponseEntity<Object> crearIndicacion(@RequestBody IndicacionDto indicacionDto) {
         return indicacionService.crearIndicacion(indicacionDto);
     }
-
+    @DeleteMapping("/producto/{productoId}")
+    public ResponseEntity<Object> eliminarIndicacionesPorProducto(@PathVariable Integer productoId) {
+        return indicacionService.eliminarIndicacionesPorProducto(productoId);
+    }
     @GetMapping("/{id}")
     public ResponseEntity<Object> obtenerIndicacionPorId(@PathVariable Integer id) {
         return indicacionService.obtenerIndicacionPorId(id);
