@@ -31,7 +31,7 @@ public class MeseroDto {
     @Min(value = 1, message = "La edad debe ser mayor que cero")
     private Integer edad;
 
-    private String foto;  // Cambiado de byte[] a String para manejar Base64
+    private String foto;  // Ya está como String, mantener así para URL
 
     private Boolean status;
 

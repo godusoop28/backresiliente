@@ -34,37 +34,18 @@ public class ProductoTienda {
     @Column(name = "categoria", length = 50)
     private String categoria;
 
-    @Column(name = "stock", nullable = false)
-    private Integer stock;
-
-    @Lob
-    @Column(name = "imagen", columnDefinition = "LONGBLOB")
-    private byte[] imagen;
-
-    @Column(name = "sku", nullable = false, length = 30, unique = true)
-    private String sku;
+    @Column(name = "imagen", columnDefinition = "TEXT")
+    private String imagen; // Cambiado de byte[] a String para URL
 
     @Column(name = "descuento", precision = 5, scale = 2)
     private BigDecimal descuento;
 
-    @Column(name = "destacado", nullable = false, columnDefinition = "TINYINT DEFAULT 0")
-    private Boolean destacado = false;
-
     @Column(name = "fecha_creacion", nullable = false)
     private LocalDateTime fechaCreacion;
-
-    @Column(name = "fecha_actualizacion")
-    private LocalDateTime fechaActualizacion;
 
     @Column(name = "status", nullable = false, columnDefinition = "TINYINT DEFAULT 1")
     private Boolean status = true;
 
     @Column(name = "caracteristicas", columnDefinition = "TEXT")
     private String caracteristicas;
-
-    @Column(name = "peso", precision = 10, scale = 2)
-    private BigDecimal peso;
-
-    @Column(name = "dimensiones", length = 100)
-    private String dimensiones;
 }

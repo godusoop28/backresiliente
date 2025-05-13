@@ -36,9 +36,8 @@ public class Producto {
     @Column(name = "categoria", length = 50)
     private String categoria;
 
-    @Lob
-    @Column(name = "foto", columnDefinition = "LONGBLOB")
-    private byte[] foto;
+    @Column(name = "foto", columnDefinition = "TEXT")
+    private String foto; // Cambiado de byte[] a String para URL
 
     @Column(name = "codigo", nullable = false, unique = true, length = 50)
     private String codigo;

@@ -45,10 +45,7 @@ public class ProductoTiendaController {
         return productoTiendaService.obtenerProductosTiendaPorCategoria(categoria);
     }
 
-    @GetMapping("/destacados")
-    public ResponseEntity<Object> obtenerProductosTiendaDestacados() {
-        return productoTiendaService.obtenerProductosTiendaDestacados();
-    }
+
 
     @GetMapping("/buscar")
     public ResponseEntity<Object> buscarProductosTiendaPorNombre(@RequestParam String nombre) {
@@ -83,12 +80,7 @@ public class ProductoTiendaController {
         return productoTiendaService.cambiarEstadoProductoTienda(id, status);
     }
 
-    @PatchMapping("/{id}/destacado/{destacado}")
-    public ResponseEntity<Object> cambiarDestacadoProductoTienda(
-            @PathVariable Integer id,
-            @PathVariable Boolean destacado) {
-        return productoTiendaService.cambiarDestacadoProductoTienda(id, destacado);
-    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> eliminarProductoTienda(@PathVariable Integer id) {

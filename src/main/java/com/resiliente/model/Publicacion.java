@@ -27,9 +27,8 @@ public class Publicacion {
     @Column(name = "contenido", nullable = false, columnDefinition = "TEXT")
     private String contenido;
 
-    @Lob
-    @Column(name = "imagen", columnDefinition = "LONGBLOB")
-    private byte[] imagen;
+    @Column(name = "imagen", columnDefinition = "TEXT")
+    private String imagen; // Cambiado de byte[] a String para URL
 
     @Column(name = "fecha_publicacion", nullable = false)
     private LocalDateTime fechaPublicacion;

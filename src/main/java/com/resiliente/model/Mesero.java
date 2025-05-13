@@ -31,8 +31,8 @@ public class Mesero {
     @Column(nullable = false)
     private Integer edad;
 
-    @Column(columnDefinition = "LONGTEXT")  // Cambiado de TEXT a LONGTEXT para permitir cadenas más largas
-    private String foto;  // Almacenamos la foto como una cadena Base64
+    @Column(columnDefinition = "TEXT")  // Cambiado de LONGTEXT a TEXT para URL
+    private String foto;  // Ya está como String, mantener así para URL
 
     @Column(nullable = false)
     private Boolean status = true;

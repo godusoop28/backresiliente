@@ -33,9 +33,8 @@ public class Taller {
     @Column(name = "fecha_fin", nullable = false)
     private LocalDateTime fechaFin;
 
-    @Lob
-    @Column(name = "imagen", columnDefinition = "LONGBLOB")
-    private byte[] imagen;
+    @Column(name = "imagen", columnDefinition = "TEXT")
+    private String imagen; // Cambiado de byte[] a String para URL
 
     @Column(name = "status", nullable = false, columnDefinition = "TINYINT DEFAULT 1")
     private Boolean status = true;

@@ -31,7 +31,7 @@ public class TallerDto {
     @NotNull(groups = {Crear.class, Actualizar.class}, message = "La fecha de fin es obligatoria")
     private LocalDateTime fechaFin;
 
-    private byte[] imagen;
+    private String imagen; // Cambiado de byte[] a String para URL
 
     private Boolean status;
 

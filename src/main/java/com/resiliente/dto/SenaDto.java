@@ -19,7 +19,7 @@ public class SenaDto {
     @Size(max = 100, message = "El nombre no puede exceder los 100 caracteres")
     private String nombre;
 
-    private byte[] video;
+    private String video; // Cambiado de byte[] a String para URL
 
     private Boolean status;
 

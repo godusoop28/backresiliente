@@ -342,90 +342,78 @@ public class DataInitializer {
             }
 
             // ==================== PRODUCTOS TIENDA ====================
-            if (productoTiendaRepository.findBySku("TAZA-001").isEmpty()) {
+
                 ProductoTienda producto1 = new ProductoTienda();
                 producto1.setNombre("Taza Café Inclusivo");
                 producto1.setDescripcion("Taza con el logo de Café Inclusivo");
                 producto1.setPrecio(new BigDecimal("12.99"));
                 producto1.setCategoria("Merchandising");
-                producto1.setStock(50);
-                producto1.setSku("TAZA-001");
+
                 producto1.setDescuento(new BigDecimal("0.00"));
-                producto1.setDestacado(true);
+
                 producto1.setFechaCreacion(LocalDateTime.now());
                 producto1.setCaracteristicas("Taza de cerámica, 350ml, apta para microondas y lavavajillas");
-                producto1.setPeso(new BigDecimal("0.3"));
-                producto1.setDimensiones("10x8x12 cm");
-                productoTiendaRepository.saveAndFlush(producto1);
-            }
 
-            if (productoTiendaRepository.findBySku("LIBRO-001").isEmpty()) {
-                ProductoTienda producto2 = new ProductoTienda();
+                productoTiendaRepository.saveAndFlush(producto1);
+
+
+
+               ProductoTienda producto2 = new ProductoTienda();
                 producto2.setNombre("Libro de Lenguaje de Señas");
                 producto2.setDescripcion("Guía completa de lenguaje de señas");
                 producto2.setPrecio(new BigDecimal("24.99"));
                 producto2.setCategoria("Libros");
-                producto2.setStock(30);
-                producto2.setSku("LIBRO-001");
+
                 producto2.setDescuento(new BigDecimal("5.00"));
-                producto2.setDestacado(true);
+
                 producto2.setFechaCreacion(LocalDateTime.now());
                 producto2.setCaracteristicas("200 páginas, tapa blanda, incluye ilustraciones a color");
-                producto2.setPeso(new BigDecimal("0.5"));
-                producto2.setDimensiones("21x15x1.5 cm");
-                productoTiendaRepository.saveAndFlush(producto2);
-            }
 
-            if (productoTiendaRepository.findBySku("CAFE-001").isEmpty()) {
-                ProductoTienda producto3 = new ProductoTienda();
+                productoTiendaRepository.saveAndFlush(producto2);
+
+
+
+              ProductoTienda producto3 = new ProductoTienda();
                 producto3.setNombre("Café en Grano Premium");
                 producto3.setDescripcion("Café en grano de alta calidad");
                 producto3.setPrecio(new BigDecimal("18.50"));
                 producto3.setCategoria("Café");
-                producto3.setStock(100);
-                producto3.setSku("CAFE-001");
+
                 producto3.setDescuento(new BigDecimal("0.00"));
-                producto3.setDestacado(false);
+
                 producto3.setFechaCreacion(LocalDateTime.now());
                 producto3.setCaracteristicas("500g, tueste medio, origen Colombia");
-                producto3.setPeso(new BigDecimal("0.5"));
-                producto3.setDimensiones("15x8x20 cm");
-                productoTiendaRepository.saveAndFlush(producto3);
-            }
 
-            if (productoTiendaRepository.findBySku("CAMISETA-001").isEmpty()) {
-                ProductoTienda producto4 = new ProductoTienda();
+                productoTiendaRepository.saveAndFlush(producto3);
+
+
+              ProductoTienda producto4 = new ProductoTienda();
                 producto4.setNombre("Camiseta Café Inclusivo");
                 producto4.setDescripcion("Camiseta con el logo de Café Inclusivo");
                 producto4.setPrecio(new BigDecimal("19.99"));
                 producto4.setCategoria("Ropa");
-                producto4.setStock(40);
-                producto4.setSku("CAMISETA-001");
+
                 producto4.setDescuento(new BigDecimal("0.00"));
-                producto4.setDestacado(false);
+
                 producto4.setFechaCreacion(LocalDateTime.now());
                 producto4.setCaracteristicas("100% algodón, disponible en tallas S, M, L, XL");
-                producto4.setPeso(new BigDecimal("0.2"));
-                producto4.setDimensiones("30x20x2 cm (empaquetado)");
-                productoTiendaRepository.saveAndFlush(producto4);
-            }
 
-            if (productoTiendaRepository.findBySku("TARJETA-001").isEmpty()) {
-                ProductoTienda producto5 = new ProductoTienda();
+                productoTiendaRepository.saveAndFlush(producto4);
+
+
+              ProductoTienda producto5 = new ProductoTienda();
                 producto5.setNombre("Tarjeta Regalo");
                 producto5.setDescripcion("Tarjeta regalo para usar en Café Inclusivo");
                 producto5.setPrecio(new BigDecimal("25.00"));
                 producto5.setCategoria("Regalos");
-                producto5.setStock(200);
-                producto5.setSku("TARJETA-001");
+
                 producto5.setDescuento(new BigDecimal("0.00"));
-                producto5.setDestacado(true);
+
                 producto5.setFechaCreacion(LocalDateTime.now());
                 producto5.setCaracteristicas("Tarjeta regalo de $25, válida por 1 año");
-                producto5.setPeso(new BigDecimal("0.01"));
-                producto5.setDimensiones("8.5x5.5x0.1 cm");
+
                 productoTiendaRepository.saveAndFlush(producto5);
-            }
+
         };
     }
 }

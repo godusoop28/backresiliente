@@ -30,7 +30,7 @@ public class ProductoDto {
     @NotBlank(groups = {Crear.class, Actualizar.class}, message = "La descripción es obligatoria")
     private String descripcion;
 
-    private byte[] foto;
+    private String foto; // Cambiado de byte[] a String para URL
 
     @NotBlank(groups = {Crear.class}, message = "El código es obligatorio")
     @Size(max = 50, message = "El código no puede exceder los 50 caracteres")

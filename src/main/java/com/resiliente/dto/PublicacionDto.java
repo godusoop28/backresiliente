@@ -24,7 +24,7 @@ public class PublicacionDto {
     @NotBlank(groups = {Crear.class, Actualizar.class}, message = "El contenido es obligatorio")
     private String contenido;
 
-    private byte[] imagen;
+    private String imagen; // Cambiado de byte[] a String para URL
 
     private LocalDateTime fechaPublicacion;
 

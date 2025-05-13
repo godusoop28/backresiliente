@@ -1,7 +1,6 @@
 package com.resiliente.dto;
 
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -33,30 +32,15 @@ public class ProductoTiendaDto {
     @Size(max = 50, message = "La categoría no puede exceder los 50 caracteres")
     private String categoria;
 
-    @Min(value = 0, message = "El stock no puede ser negativo")
-    private Integer stock;
-
-    private byte[] imagen;
-
-    @NotBlank(groups = {Crear.class}, message = "El SKU es obligatorio")
-    @Size(max = 30, message = "El SKU no puede exceder los 30 caracteres")
-    private String sku;
+    private String imagen; // Cambiado de byte[] a String para URL
 
     private BigDecimal descuento;
 
-    private Boolean destacado;
-
     private LocalDateTime fechaCreacion;
-
-    private LocalDateTime fechaActualizacion;
 
     private Boolean status;
 
     private String caracteristicas;
-
-    private BigDecimal peso;
-
-    private String dimensiones;
 
     // Interfaces para validación
     public interface Crear {}

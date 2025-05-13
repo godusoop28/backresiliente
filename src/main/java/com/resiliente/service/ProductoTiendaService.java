@@ -29,13 +29,6 @@ public class ProductoTiendaService {
     @Transactional
     public ResponseEntity<Object> crearProductoTienda(ProductoTiendaDto productoTiendaDto) {
         // Verificar si ya existe un producto con el mismo SKU
-        Optional<ProductoTienda> productoExistente = productoTiendaRepository.findBySku(productoTiendaDto.getSku());
-        if (productoExistente.isPresent()) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("mensaje", "Ya existe un producto con el SKU: " + productoTiendaDto.getSku());
-            response.put("tipo", "ERROR");
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
 
         // Crear y guardar el nuevo producto
         ProductoTienda productoTienda = new ProductoTienda();
@@ -43,16 +36,14 @@ public class ProductoTiendaService {
         productoTienda.setDescripcion(productoTiendaDto.getDescripcion());
         productoTienda.setPrecio(productoTiendaDto.getPrecio());
         productoTienda.setCategoria(productoTiendaDto.getCategoria());
-        productoTienda.setStock(productoTiendaDto.getStock());
+
         productoTienda.setImagen(productoTiendaDto.getImagen());
-        productoTienda.setSku(productoTiendaDto.getSku());
+
         productoTienda.setDescuento(productoTiendaDto.getDescuento());
-        productoTienda.setDestacado(productoTiendaDto.getDestacado() != null ? productoTiendaDto.getDestacado() : false);
+
         productoTienda.setFechaCreacion(LocalDateTime.now());
         productoTienda.setStatus(true); // Por defecto, el producto está activo
         productoTienda.setCaracteristicas(productoTiendaDto.getCaracteristicas());
-        productoTienda.setPeso(productoTiendaDto.getPeso());
-        productoTienda.setDimensiones(productoTiendaDto.getDimensiones());
 
         ProductoTienda productoGuardado = productoTiendaRepository.save(productoTienda);
 
@@ -137,23 +128,7 @@ public class ProductoTiendaService {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @Transactional(readOnly = true)
-    public ResponseEntity<Object> obtenerProductosTiendaDestacados() {
-        List<ProductoTienda> productos = productoTiendaRepository.findByDestacado(true);
 
-        if (productos.isEmpty()) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("mensaje", "No hay productos destacados");
-            response.put("tipo", "WARNING");
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("datos", productos);
-        response.put("mensaje", "Lista de productos destacados");
-        response.put("tipo", "SUCCESS");
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
 
     @Transactional(readOnly = true)
     public ResponseEntity<Object> buscarProductosTiendaPorNombre(String nombre) {
@@ -204,34 +179,23 @@ public class ProductoTiendaService {
 
         ProductoTienda producto = productoOptional.get();
 
-        // Verificar si ya existe otro producto con el mismo SKU
-        if (productoTiendaDto.getSku() != null && !producto.getSku().equals(productoTiendaDto.getSku())) {
-            Optional<ProductoTienda> productoExistente = productoTiendaRepository.findBySku(productoTiendaDto.getSku());
-            if (productoExistente.isPresent()) {
-                Map<String, Object> response = new HashMap<>();
-                response.put("mensaje", "Ya existe un producto con el SKU: " + productoTiendaDto.getSku());
-                response.put("tipo", "ERROR");
-                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-            }
-        }
+
 
         // Actualizar el producto
         if (productoTiendaDto.getNombre() != null) producto.setNombre(productoTiendaDto.getNombre());
         if (productoTiendaDto.getDescripcion() != null) producto.setDescripcion(productoTiendaDto.getDescripcion());
         if (productoTiendaDto.getPrecio() != null) producto.setPrecio(productoTiendaDto.getPrecio());
         if (productoTiendaDto.getCategoria() != null) producto.setCategoria(productoTiendaDto.getCategoria());
-        if (productoTiendaDto.getStock() != null) producto.setStock(productoTiendaDto.getStock());
+
         if (productoTiendaDto.getImagen() != null) producto.setImagen(productoTiendaDto.getImagen());
-        if (productoTiendaDto.getSku() != null) producto.setSku(productoTiendaDto.getSku());
+
         if (productoTiendaDto.getDescuento() != null) producto.setDescuento(productoTiendaDto.getDescuento());
-        if (productoTiendaDto.getDestacado() != null) producto.setDestacado(productoTiendaDto.getDestacado());
-        if (productoTiendaDto.getStatus() != null) producto.setStatus(productoTiendaDto.getStatus());
+
+       if (productoTiendaDto.getStatus() != null) producto.setStatus(productoTiendaDto.getStatus());
         if (productoTiendaDto.getCaracteristicas() != null) producto.setCaracteristicas(productoTiendaDto.getCaracteristicas());
-        if (productoTiendaDto.getPeso() != null) producto.setPeso(productoTiendaDto.getPeso());
-        if (productoTiendaDto.getDimensiones() != null) producto.setDimensiones(productoTiendaDto.getDimensiones());
 
         // Actualizar fecha de actualización
-        producto.setFechaActualizacion(LocalDateTime.now());
+
 
         ProductoTienda productoActualizado = productoTiendaRepository.save(producto);
 
@@ -254,8 +218,7 @@ public class ProductoTiendaService {
         }
 
         ProductoTienda producto = productoOptional.get();
-        producto.setStock(stock);
-        producto.setFechaActualizacion(LocalDateTime.now());
+
 
         ProductoTienda productoActualizado = productoTiendaRepository.save(producto);
 
@@ -279,7 +242,7 @@ public class ProductoTiendaService {
 
         ProductoTienda producto = productoOptional.get();
         producto.setStatus(status);
-        producto.setFechaActualizacion(LocalDateTime.now());
+
 
         ProductoTienda productoActualizado = productoTiendaRepository.save(producto);
 
@@ -292,31 +255,7 @@ public class ProductoTiendaService {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @Transactional
-    public ResponseEntity<Object> cambiarDestacadoProductoTienda(Integer id, Boolean destacado) {
-        Optional<ProductoTienda> productoOptional = productoTiendaRepository.findById(id);
 
-        if (productoOptional.isEmpty()) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("mensaje", "Producto no encontrado con ID: " + id);
-            response.put("tipo", "WARNING");
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        }
-
-        ProductoTienda producto = productoOptional.get();
-        producto.setDestacado(destacado);
-        producto.setFechaActualizacion(LocalDateTime.now());
-
-        ProductoTienda productoActualizado = productoTiendaRepository.save(producto);
-
-        String mensaje = destacado ? "Producto marcado como destacado" : "Producto desmarcado como destacado";
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("datos", productoActualizado);
-        response.put("mensaje", mensaje);
-        response.put("tipo", "SUCCESS");
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
 
     @Transactional
     public ResponseEntity<Object> eliminarProductoTienda(Integer id) {

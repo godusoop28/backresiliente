@@ -11,12 +11,12 @@ import java.util.Optional;
 
 @Repository
 public interface ProductoTiendaRepository extends JpaRepository<ProductoTienda, Integer> {
-    Optional<ProductoTienda> findBySku(String sku);
+
     List<ProductoTienda> findByNombreContaining(String nombre);
     List<ProductoTienda> findByCategoria(String categoria);
     List<ProductoTienda> findByStatus(Boolean status);
-    List<ProductoTienda> findByDestacado(Boolean destacado);
+
     List<ProductoTienda> findByPrecioBetween(BigDecimal precioMin, BigDecimal precioMax);
-    List<ProductoTienda> findByStockLessThan(Integer stockMinimo);
+
     List<ProductoTienda> findByFechaCreacionBetween(LocalDateTime inicio, LocalDateTime fin);
 }

@@ -25,9 +25,8 @@ public class Sena {
     @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
 
-    @Lob
-    @Column(name = "video", columnDefinition = "LONGBLOB")
-    private byte[] video;
+    @Column(name = "video", columnDefinition = "TEXT")
+    private String video; // Cambiado de byte[] a String para URL
 
     @Column(name = "status", nullable = false, columnDefinition = "TINYINT DEFAULT 1")
     private Boolean status = true;
