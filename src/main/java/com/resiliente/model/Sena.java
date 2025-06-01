@@ -26,12 +26,13 @@ public class Sena {
     private String nombre;
 
     @Column(name = "video", columnDefinition = "TEXT")
-    private String video; // Cambiado de byte[] a String para URL
+    private String video;
 
     @Column(name = "status", nullable = false, columnDefinition = "TINYINT DEFAULT 1")
     private Boolean status = true;
 
+    // Relación inversa con productos
     @OneToMany(mappedBy = "sena", fetch = FetchType.LAZY)
     @JsonIgnore
-    private List<Indicacion> indicaciones;
+    private List<Producto> productos;
 }

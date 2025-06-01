@@ -1,7 +1,5 @@
 package com.resiliente.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Entity
 @Table(name = "producto")
@@ -37,7 +34,7 @@ public class Producto {
     private String categoria;
 
     @Column(name = "foto", columnDefinition = "TEXT")
-    private String foto; // Cambiado de byte[] a String para URL
+    private String foto;
 
     @Column(name = "codigo", nullable = false, unique = true, length = 50)
     private String codigo;
@@ -45,7 +42,8 @@ public class Producto {
     @Column(name = "status", nullable = false, columnDefinition = "TINYINT DEFAULT 1")
     private Boolean status = true;
 
-    @OneToMany(mappedBy = "producto", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties("producto")
-    private List<Indicacion> indicaciones;
+    // Nueva relación directa con Sena
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "idSena", referencedColumnName = "idSena")
+    private Sena sena;
 }

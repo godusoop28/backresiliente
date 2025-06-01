@@ -21,7 +21,7 @@ public class DataInitializer {
             SenaRepository senaRepository,
             ProductoRepository productoRepository,
             MeseroRepository meseroRepository,
-            IndicacionRepository indicacionRepository,
+
             CandidatoRepository candidatoRepository,
             PublicacionRepository publicacionRepository,
             TallerRepository tallerRepository,

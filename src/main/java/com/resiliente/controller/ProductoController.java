@@ -38,6 +38,11 @@ public class ProductoController {
         return productoService.obtenerProductosPorEstado(status);
     }
 
+    @GetMapping("/sena/{idSena}")
+    public ResponseEntity<Object> obtenerProductosPorSena(@PathVariable Integer idSena) {
+        return productoService.obtenerProductosPorSena(idSena);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<Object> actualizarProducto(@PathVariable Integer id, @RequestBody ProductoDto productoDto) {
         return productoService.actualizarProducto(id, productoDto);
@@ -46,6 +51,16 @@ public class ProductoController {
     @PatchMapping("/{id}/estado/{status}")
     public ResponseEntity<Object> cambiarEstadoProducto(@PathVariable Integer id, @PathVariable Boolean status) {
         return productoService.cambiarEstadoProducto(id, status);
+    }
+
+    @PatchMapping("/{idProducto}/sena/{idSena}")
+    public ResponseEntity<Object> asignarSenaAProducto(@PathVariable Integer idProducto, @PathVariable Integer idSena) {
+        return productoService.asignarSenaAProducto(idProducto, idSena);
+    }
+
+    @DeleteMapping("/{idProducto}/sena")
+    public ResponseEntity<Object> removerSenaDeProducto(@PathVariable Integer idProducto) {
+        return productoService.removerSenaDeProducto(idProducto);
     }
 
     @DeleteMapping("/{id}")
