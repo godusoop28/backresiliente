@@ -8,6 +8,7 @@ import com.resiliente.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,11 +22,13 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final RolRepository rolRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UsuarioService(UsuarioRepository usuarioRepository, RolRepository rolRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, RolRepository rolRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.rolRepository = rolRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -64,6 +67,8 @@ public class UsuarioService {
         usuario.setArea(usuarioDto.getArea());
         usuario.setStatus(true); // Por defecto, el usuario está activo
         usuario.setEmail(usuarioDto.getEmail());
+        // Encriptar contraseña
+        usuario.setPassword(passwordEncoder.encode(usuarioDto.getPassword()));
 
         Usuario usuarioGuardado = usuarioRepository.save(usuario);
 
@@ -185,6 +190,10 @@ public class UsuarioService {
         if (usuarioDto.getArea() != null) usuario.setArea(usuarioDto.getArea());
         if (usuarioDto.getStatus() != null) usuario.setStatus(usuarioDto.getStatus());
         if (usuarioDto.getEmail() != null) usuario.setEmail(usuarioDto.getEmail());
+        // Actualizar contraseña si se proporciona
+        if (usuarioDto.getPassword() != null && !usuarioDto.getPassword().trim().isEmpty()) {
+            usuario.setPassword(passwordEncoder.encode(usuarioDto.getPassword()));
+        }
 
         Usuario usuarioActualizado = usuarioRepository.save(usuario);
 

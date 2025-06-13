@@ -1,5 +1,6 @@
 package com.resiliente.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -42,4 +43,9 @@ public class Usuario {
 
     @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
+
+    // Nueva columna para contraseña encriptada
+    @JsonIgnore
+    @Column(name = "password", nullable = false, length = 255)
+    private String password;
 }

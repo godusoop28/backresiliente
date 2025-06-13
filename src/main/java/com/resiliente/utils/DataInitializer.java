@@ -5,10 +5,10 @@ import com.resiliente.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 
 @Configuration
 public class DataInitializer {
@@ -21,17 +21,16 @@ public class DataInitializer {
             SenaRepository senaRepository,
             ProductoRepository productoRepository,
             MeseroRepository meseroRepository,
-
             CandidatoRepository candidatoRepository,
             PublicacionRepository publicacionRepository,
             TallerRepository tallerRepository,
-            ProductoTiendaRepository productoTiendaRepository
+            ProductoTiendaRepository productoTiendaRepository,
+            PasswordEncoder passwordEncoder  // ← AGREGAR ESTO
     ) {
         return args -> {
             // ==================== ROLES ====================
             Rol adminRole = new Rol("ADMIN");
             Rol empleadoRole = new Rol("EMPLEADO");
-
 
             if (rolRepository.findByNombre("ADMIN").isEmpty()) {
                 rolRepository.saveAndFlush(adminRole);
@@ -45,8 +44,6 @@ public class DataInitializer {
                 empleadoRole = rolRepository.findByNombre("EMPLEADO").get();
             }
 
-
-
             // ==================== USUARIOS ====================
             if (usuarioRepository.findByEmail("admin@resiliente.com").isEmpty()) {
                 Usuario admin = new Usuario();
@@ -56,6 +53,8 @@ public class DataInitializer {
                 admin.setNumeroEmpleado(1001);
                 admin.setArea("Administración");
                 admin.setEmail("admin@resiliente.com");
+                admin.setPassword(passwordEncoder.encode("admin123")); // ← AGREGAR ESTO
+                admin.setStatus(true); // ← AGREGAR ESTO
                 usuarioRepository.saveAndFlush(admin);
             }
 
@@ -67,12 +66,10 @@ public class DataInitializer {
                 empleado.setNumeroEmpleado(2001);
                 empleado.setArea("Operaciones");
                 empleado.setEmail("empleado@resiliente.com");
+                empleado.setPassword(passwordEncoder.encode("empleado123")); // ← AGREGAR ESTO
+                empleado.setStatus(true); // ← AGREGAR ESTO
                 usuarioRepository.saveAndFlush(empleado);
             }
-
-
-
-
 
             // ==================== CONDICIONES ====================
             Condicion sordomudo = new Condicion();
@@ -223,24 +220,28 @@ public class DataInitializer {
             mesero1.setPresentacion("Mesero con experiencia en atención al cliente");
             mesero1.setCondicion(sordomudo);
             mesero1.setEdad(25);
+            mesero1.setStatus(true); // ← AGREGAR SI ES NECESARIO
 
             Mesero mesero2 = new Mesero();
             mesero2.setNombre("Ana García");
             mesero2.setPresentacion("Mesera con 3 años de experiencia");
             mesero2.setCondicion(discapacidadAuditiva);
             mesero2.setEdad(28);
+            mesero2.setStatus(true); // ← AGREGAR SI ES NECESARIO
 
             Mesero mesero3 = new Mesero();
             mesero3.setNombre("Luis Martínez");
             mesero3.setPresentacion("Mesero especializado en atención personalizada");
             mesero3.setCondicion(discapacidadIntelectual);
             mesero3.setEdad(30);
+            mesero3.setStatus(true); // ← AGREGAR SI ES NECESARIO
 
             Mesero mesero4 = new Mesero();
             mesero4.setNombre("María López");
             mesero4.setPresentacion("Mesera con gran capacidad de aprendizaje");
             mesero4.setCondicion(discapacidadIntelectual);
             mesero4.setEdad(22);
+            mesero4.setStatus(true); // ← AGREGAR SI ES NECESARIO
 
             if (meseroRepository.findByNombre("Carlos Rodríguez").isEmpty()) {
                 meseroRepository.saveAndFlush(mesero1);
@@ -257,8 +258,6 @@ public class DataInitializer {
             if (meseroRepository.findByNombre("María López").isEmpty()) {
                 meseroRepository.saveAndFlush(mesero4);
             }
-
-
 
             // ==================== CANDIDATOS ====================
             if (candidatoRepository.findByEmail("juan.perez@ejemplo.com").isEmpty()) {
@@ -342,78 +341,55 @@ public class DataInitializer {
             }
 
             // ==================== PRODUCTOS TIENDA ====================
+            ProductoTienda producto1 = new ProductoTienda();
+            producto1.setNombre("Taza Café Inclusivo");
+            producto1.setDescripcion("Taza con el logo de Café Inclusivo");
+            producto1.setPrecio(new BigDecimal("12.99"));
+            producto1.setCategoria("Merchandising");
+            producto1.setDescuento(new BigDecimal("0.00"));
+            producto1.setFechaCreacion(LocalDateTime.now());
+            producto1.setCaracteristicas("Taza de cerámica, 350ml, apta para microondas y lavavajillas");
+            productoTiendaRepository.saveAndFlush(producto1);
 
-                ProductoTienda producto1 = new ProductoTienda();
-                producto1.setNombre("Taza Café Inclusivo");
-                producto1.setDescripcion("Taza con el logo de Café Inclusivo");
-                producto1.setPrecio(new BigDecimal("12.99"));
-                producto1.setCategoria("Merchandising");
+            ProductoTienda producto2 = new ProductoTienda();
+            producto2.setNombre("Libro de Lenguaje de Señas");
+            producto2.setDescripcion("Guía completa de lenguaje de señas");
+            producto2.setPrecio(new BigDecimal("24.99"));
+            producto2.setCategoria("Libros");
+            producto2.setDescuento(new BigDecimal("5.00"));
+            producto2.setFechaCreacion(LocalDateTime.now());
+            producto2.setCaracteristicas("200 páginas, tapa blanda, incluye ilustraciones a color");
+            productoTiendaRepository.saveAndFlush(producto2);
 
-                producto1.setDescuento(new BigDecimal("0.00"));
+            ProductoTienda producto3 = new ProductoTienda();
+            producto3.setNombre("Café en Grano Premium");
+            producto3.setDescripcion("Café en grano de alta calidad");
+            producto3.setPrecio(new BigDecimal("18.50"));
+            producto3.setCategoria("Café");
+            producto3.setDescuento(new BigDecimal("0.00"));
+            producto3.setFechaCreacion(LocalDateTime.now());
+            producto3.setCaracteristicas("500g, tueste medio, origen Colombia");
+            productoTiendaRepository.saveAndFlush(producto3);
 
-                producto1.setFechaCreacion(LocalDateTime.now());
-                producto1.setCaracteristicas("Taza de cerámica, 350ml, apta para microondas y lavavajillas");
+            ProductoTienda producto4 = new ProductoTienda();
+            producto4.setNombre("Camiseta Café Inclusivo");
+            producto4.setDescripcion("Camiseta con el logo de Café Inclusivo");
+            producto4.setPrecio(new BigDecimal("19.99"));
+            producto4.setCategoria("Ropa");
+            producto4.setDescuento(new BigDecimal("0.00"));
+            producto4.setFechaCreacion(LocalDateTime.now());
+            producto4.setCaracteristicas("100% algodón, disponible en tallas S, M, L, XL");
+            productoTiendaRepository.saveAndFlush(producto4);
 
-                productoTiendaRepository.saveAndFlush(producto1);
-
-
-
-               ProductoTienda producto2 = new ProductoTienda();
-                producto2.setNombre("Libro de Lenguaje de Señas");
-                producto2.setDescripcion("Guía completa de lenguaje de señas");
-                producto2.setPrecio(new BigDecimal("24.99"));
-                producto2.setCategoria("Libros");
-
-                producto2.setDescuento(new BigDecimal("5.00"));
-
-                producto2.setFechaCreacion(LocalDateTime.now());
-                producto2.setCaracteristicas("200 páginas, tapa blanda, incluye ilustraciones a color");
-
-                productoTiendaRepository.saveAndFlush(producto2);
-
-
-
-              ProductoTienda producto3 = new ProductoTienda();
-                producto3.setNombre("Café en Grano Premium");
-                producto3.setDescripcion("Café en grano de alta calidad");
-                producto3.setPrecio(new BigDecimal("18.50"));
-                producto3.setCategoria("Café");
-
-                producto3.setDescuento(new BigDecimal("0.00"));
-
-                producto3.setFechaCreacion(LocalDateTime.now());
-                producto3.setCaracteristicas("500g, tueste medio, origen Colombia");
-
-                productoTiendaRepository.saveAndFlush(producto3);
-
-
-              ProductoTienda producto4 = new ProductoTienda();
-                producto4.setNombre("Camiseta Café Inclusivo");
-                producto4.setDescripcion("Camiseta con el logo de Café Inclusivo");
-                producto4.setPrecio(new BigDecimal("19.99"));
-                producto4.setCategoria("Ropa");
-
-                producto4.setDescuento(new BigDecimal("0.00"));
-
-                producto4.setFechaCreacion(LocalDateTime.now());
-                producto4.setCaracteristicas("100% algodón, disponible en tallas S, M, L, XL");
-
-                productoTiendaRepository.saveAndFlush(producto4);
-
-
-              ProductoTienda producto5 = new ProductoTienda();
-                producto5.setNombre("Tarjeta Regalo");
-                producto5.setDescripcion("Tarjeta regalo para usar en Café Inclusivo");
-                producto5.setPrecio(new BigDecimal("25.00"));
-                producto5.setCategoria("Regalos");
-
-                producto5.setDescuento(new BigDecimal("0.00"));
-
-                producto5.setFechaCreacion(LocalDateTime.now());
-                producto5.setCaracteristicas("Tarjeta regalo de $25, válida por 1 año");
-
-                productoTiendaRepository.saveAndFlush(producto5);
-
+            ProductoTienda producto5 = new ProductoTienda();
+            producto5.setNombre("Tarjeta Regalo");
+            producto5.setDescripcion("Tarjeta regalo para usar en Café Inclusivo");
+            producto5.setPrecio(new BigDecimal("25.00"));
+            producto5.setCategoria("Regalos");
+            producto5.setDescuento(new BigDecimal("0.00"));
+            producto5.setFechaCreacion(LocalDateTime.now());
+            producto5.setCaracteristicas("Tarjeta regalo de $25, válida por 1 año");
+            productoTiendaRepository.saveAndFlush(producto5);
         };
     }
 }

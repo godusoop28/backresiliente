@@ -42,6 +42,10 @@ public class UsuarioDto {
     @Size(max = 100, message = "El email no puede exceder los 100 caracteres")
     private String email;
 
+    @NotBlank(groups = {Crear.class}, message = "La contraseña es obligatoria")
+    @Size(min = 6, max = 100, message = "La contraseña debe tener entre 6 y 100 caracteres")
+    private String password;
+
     // Interfaces para validación
     public interface Crear {}
     public interface Actualizar {}
