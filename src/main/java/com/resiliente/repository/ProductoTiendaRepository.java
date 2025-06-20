@@ -18,5 +18,7 @@ public interface ProductoTiendaRepository extends JpaRepository<ProductoTienda, 
 
     List<ProductoTienda> findByPrecioBetween(BigDecimal precioMin, BigDecimal precioMax);
 
+    List<ProductoTienda> findByStatusOrderByFechaCreacionDesc(Boolean status);
+    List<ProductoTienda> findByStatusAndCategoriaContainingIgnoreCase(Boolean status, String categoria);
     List<ProductoTienda> findByFechaCreacionBetween(LocalDateTime inicio, LocalDateTime fin);
 }

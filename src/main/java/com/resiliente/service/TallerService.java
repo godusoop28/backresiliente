@@ -191,4 +191,41 @@ public class TallerService {
         response.put("tipo", "SUCCESS");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+    @Transactional(readOnly = true)
+    public ResponseEntity<Object> obtenerTalleresActivos() {
+        List<Taller> talleres = tallerRepository.findByStatus(true);
+
+        if (talleres.isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("mensaje", "No hay talleres activos");
+            response.put("tipo", "WARNING");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("datos", talleres);
+        response.put("mensaje", "Lista de talleres activos");
+        response.put("tipo", "SUCCESS");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<Object> obtenerTalleresInactivos() {
+        List<Taller> talleres = tallerRepository.findByStatus(false);
+
+        if (talleres.isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("mensaje", "No hay talleres inactivos");
+            response.put("tipo", "WARNING");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("datos", talleres);
+        response.put("mensaje", "Lista de talleres inactivos");
+        response.put("tipo", "SUCCESS");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
 }

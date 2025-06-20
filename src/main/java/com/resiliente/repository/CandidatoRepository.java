@@ -12,5 +12,8 @@ import java.util.Optional;
 public interface CandidatoRepository extends JpaRepository<Candidato, Integer> {
     Optional<Candidato> findByEmail(String email);
     List<Candidato> findByStatus(Boolean status);
+
     List<Candidato> findByFechaEnvioBetween(LocalDateTime inicio, LocalDateTime fin);
+
+
 }

@@ -52,4 +52,18 @@ public class UsuarioController {
     public ResponseEntity<Object> eliminarUsuario(@PathVariable Integer id) {
         return usuarioService.eliminarUsuario(id);
     }
+    @GetMapping("/activos")
+    public ResponseEntity<Object> obtenerUsuariosActivos() {
+        return usuarioService.obtenerUsuariosActivos();
+    }
+
+    @GetMapping("/inactivos")
+    public ResponseEntity<Object> obtenerUsuariosInactivos() {
+        return usuarioService.obtenerUsuariosInactivos();
+    }
+
+    @GetMapping("/estado/{status}")
+    public ResponseEntity<Object> obtenerUsuariosPorEstado(@PathVariable Boolean status) {
+        return usuarioService.obtenerUsuariosPorEstado(status);
+    }
 }

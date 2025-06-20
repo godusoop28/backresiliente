@@ -52,4 +52,15 @@ public class SenaController {
     public ResponseEntity<Object> eliminarSena(@PathVariable Integer id) {
         return senaService.eliminarSena(id);
     }
+    @GetMapping("/activas")
+    public ResponseEntity<Object> obtenerSenasActivas() {
+        return senaService.obtenerSenasActivas();
+    }
+
+    @GetMapping("/inactivas")
+    public ResponseEntity<Object> obtenerSenasInactivas() {
+        return senaService.obtenerSenasInactivas();
+    }
+
+
 }

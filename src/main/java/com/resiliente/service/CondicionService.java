@@ -185,4 +185,41 @@ public class CondicionService {
         response.put("tipo", "SUCCESS");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+    @Transactional(readOnly = true)
+    public ResponseEntity<Object> obtenerCondicionesActivas() {
+        List<Condicion> condiciones = condicionRepository.findByStatus(true);
+
+        if (condiciones.isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("mensaje", "No hay condiciones activas");
+            response.put("tipo", "WARNING");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("datos", condiciones);
+        response.put("mensaje", "Lista de condiciones activas");
+        response.put("tipo", "SUCCESS");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<Object> obtenerCondicionesInactivas() {
+        List<Condicion> condiciones = condicionRepository.findByStatus(false);
+
+        if (condiciones.isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("mensaje", "No hay condiciones inactivas");
+            response.put("tipo", "WARNING");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("datos", condiciones);
+        response.put("mensaje", "Lista de condiciones inactivas");
+        response.put("tipo", "SUCCESS");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
 }

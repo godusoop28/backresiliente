@@ -52,4 +52,16 @@ public class PublicacionController {
     public ResponseEntity<Object> eliminarPublicacion(@PathVariable Integer id) {
         return publicacionService.eliminarPublicacion(id);
     }
+
+    @GetMapping("/activas")
+    public ResponseEntity<Object> obtenerPublicacionesActivas() {
+        return publicacionService.obtenerPublicacionesActivas();
+    }
+
+    @GetMapping("/inactivas")
+    public ResponseEntity<Object> obtenerPublicacionesInactivas() {
+        return publicacionService.obtenerPublicacionesInactivas();
+    }
+
+
 }

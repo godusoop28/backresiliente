@@ -57,4 +57,15 @@ public class MeseroController {
     public ResponseEntity<Object> eliminarMesero(@PathVariable Integer id) {
         return meseroService.eliminarMesero(id);
     }
+    @GetMapping("/activos")
+    public ResponseEntity<Object> obtenerMeserosActivos() {
+        return meseroService.obtenerMeserosActivos();
+    }
+
+    @GetMapping("/inactivos")
+    public ResponseEntity<Object> obtenerMeserosInactivos() {
+        return meseroService.obtenerMeserosInactivos();
+    }
+
+
 }

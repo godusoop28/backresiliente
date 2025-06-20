@@ -245,4 +245,59 @@ public class UsuarioService {
         response.put("tipo", "SUCCESS");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+    @Transactional(readOnly = true)
+    public ResponseEntity<Object> obtenerUsuariosActivos() {
+        List<Usuario> usuarios = usuarioRepository.findByStatus(true);
+
+        if (usuarios.isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("mensaje", "No hay usuarios activos");
+            response.put("tipo", "WARNING");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("datos", usuarios);
+        response.put("mensaje", "Lista de usuarios activos");
+        response.put("tipo", "SUCCESS");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<Object> obtenerUsuariosInactivos() {
+        List<Usuario> usuarios = usuarioRepository.findByStatus(false);
+
+        if (usuarios.isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("mensaje", "No hay usuarios inactivos");
+            response.put("tipo", "WARNING");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("datos", usuarios);
+        response.put("mensaje", "Lista de usuarios inactivos");
+        response.put("tipo", "SUCCESS");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<Object> obtenerUsuariosPorEstado(Boolean status) {
+        List<Usuario> usuarios = usuarioRepository.findByStatus(status);
+
+        if (usuarios.isEmpty()) {
+            String mensaje = status ? "No hay usuarios activos" : "No hay usuarios inactivos";
+            Map<String, Object> response = new HashMap<>();
+            response.put("mensaje", mensaje);
+            response.put("tipo", "WARNING");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        String mensaje = status ? "Lista de usuarios activos" : "Lista de usuarios inactivos";
+        Map<String, Object> response = new HashMap<>();
+        response.put("datos", usuarios);
+        response.put("mensaje", mensaje);
+        response.put("tipo", "SUCCESS");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

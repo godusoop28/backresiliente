@@ -18,6 +18,8 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer> {
     List<Producto> findByStatus(Boolean status);
     List<Producto> findByPrecioBetween(BigDecimal precioMin, BigDecimal precioMax);
 
+    List<Producto> findByStatusOrderByNombreAsc(Boolean status);
+    List<Producto> findByStatusAndCategoriaContainingIgnoreCase(Boolean status, String categoria);
     // Nuevos métodos para buscar por seña
     List<Producto> findBySena(Sena sena);
     List<Producto> findBySenaId(Integer idSena);

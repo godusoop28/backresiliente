@@ -90,6 +90,44 @@ public class CandidatoService {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    // Método específico para obtener candidatos activos
+    @Transactional(readOnly = true)
+    public ResponseEntity<Object> obtenerCandidatosActivos() {
+        List<Candidato> candidatos = candidatoRepository.findByStatus(true);
+
+        if (candidatos.isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("mensaje", "No hay candidatos activos");
+            response.put("tipo", "WARNING");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("datos", candidatos);
+        response.put("mensaje", "Lista de candidatos activos");
+        response.put("tipo", "SUCCESS");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    // Método específico para obtener candidatos inactivos
+    @Transactional(readOnly = true)
+    public ResponseEntity<Object> obtenerCandidatosInactivos() {
+        List<Candidato> candidatos = candidatoRepository.findByStatus(false);
+
+        if (candidatos.isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("mensaje", "No hay candidatos inactivos");
+            response.put("tipo", "WARNING");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("datos", candidatos);
+        response.put("mensaje", "Lista de candidatos inactivos");
+        response.put("tipo", "SUCCESS");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @Transactional(readOnly = true)
     public ResponseEntity<Object> obtenerCandidatosPorEstado(Boolean status) {
         List<Candidato> candidatos = candidatoRepository.findByStatus(status);

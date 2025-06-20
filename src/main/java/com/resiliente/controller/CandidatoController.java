@@ -33,6 +33,18 @@ public class CandidatoController {
         return candidatoService.obtenerTodosLosCandidatos();
     }
 
+    // Endpoint específico para candidatos activos
+    @GetMapping("/activos")
+    public ResponseEntity<Object> obtenerCandidatosActivos() {
+        return candidatoService.obtenerCandidatosActivos();
+    }
+
+    // Endpoint específico para candidatos inactivos
+    @GetMapping("/inactivos")
+    public ResponseEntity<Object> obtenerCandidatosInactivos() {
+        return candidatoService.obtenerCandidatosInactivos();
+    }
+
     @GetMapping("/estado/{status}")
     public ResponseEntity<Object> obtenerCandidatosPorEstado(@PathVariable Boolean status) {
         return candidatoService.obtenerCandidatosPorEstado(status);

@@ -273,4 +273,41 @@ public class ProductoTiendaService {
         response.put("tipo", "SUCCESS");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+    @Transactional(readOnly = true)
+    public ResponseEntity<Object> obtenerProductosTiendaActivos() {
+        List<ProductoTienda> productos = productoTiendaRepository.findByStatus(true);
+
+        if (productos.isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("mensaje", "No hay productos de tienda activos");
+            response.put("tipo", "WARNING");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("datos", productos);
+        response.put("mensaje", "Lista de productos de tienda activos");
+        response.put("tipo", "SUCCESS");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<Object> obtenerProductosTiendaInactivos() {
+        List<ProductoTienda> productos = productoTiendaRepository.findByStatus(false);
+
+        if (productos.isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("mensaje", "No hay productos de tienda inactivos");
+            response.put("tipo", "WARNING");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("datos", productos);
+        response.put("mensaje", "Lista de productos de tienda inactivos");
+        response.put("tipo", "SUCCESS");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
 }

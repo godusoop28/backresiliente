@@ -296,4 +296,41 @@ public class ProductoService {
         response.put("tipo", "SUCCESS");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+    @Transactional(readOnly = true)
+    public ResponseEntity<Object> obtenerProductosActivos() {
+        List<Producto> productos = productoRepository.findByStatus(true);
+
+        if (productos.isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("mensaje", "No hay productos activos");
+            response.put("tipo", "WARNING");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("datos", productos);
+        response.put("mensaje", "Lista de productos activos");
+        response.put("tipo", "SUCCESS");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<Object> obtenerProductosInactivos() {
+        List<Producto> productos = productoRepository.findByStatus(false);
+
+        if (productos.isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("mensaje", "No hay productos inactivos");
+            response.put("tipo", "WARNING");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("datos", productos);
+        response.put("mensaje", "Lista de productos inactivos");
+        response.put("tipo", "SUCCESS");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
 }

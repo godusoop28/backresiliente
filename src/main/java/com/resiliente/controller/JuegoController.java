@@ -52,6 +52,16 @@ public class JuegoController {
     public ResponseEntity<Object> cambiarEstadoJuego(@PathVariable Integer id, @PathVariable Boolean status) {
         return juegoService.cambiarEstadoJuego(id, status);
     }
+    @GetMapping("/activos")
+    public ResponseEntity<Object> obtenerJuegosActivos() {
+        return juegoService.obtenerJuegosActivos();
+    }
+
+    @GetMapping("/inactivos")
+    public ResponseEntity<Object> obtenerJuegosInactivos() {
+        return juegoService.obtenerJuegosInactivos();
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> eliminarJuego(@PathVariable Integer id) {

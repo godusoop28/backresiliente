@@ -14,4 +14,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     List<Usuario> findByRolId(Integer rolId);
     boolean existsByEmail(String email);
     boolean existsByNumeroEmpleado(Integer numeroEmpleado);
+    List<Usuario> findByStatus(Boolean status);
+    List<Usuario> findByStatusOrderByNombreAsc(Boolean status);
+    List<Usuario> findByStatusAndRolId(Boolean status, Integer rolId);
+    List<Usuario> findByStatusAndAreaContainingIgnoreCase(Boolean status, String area);
 }

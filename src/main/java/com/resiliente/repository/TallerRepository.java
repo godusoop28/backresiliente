@@ -14,4 +14,6 @@ public interface TallerRepository extends JpaRepository<Taller, Integer> {
     List<Taller> findByStatus(Boolean status);
     List<Taller> findByFechaInicioBetween(LocalDateTime inicio, LocalDateTime fin);
     List<Taller> findByFechaFinAfter(LocalDateTime fecha);
+    List<Taller> findByStatusOrderByFechaInicioDesc(Boolean status);
+    List<Taller> findByStatusAndFechaInicioAfter(Boolean status, LocalDateTime fecha);
 }

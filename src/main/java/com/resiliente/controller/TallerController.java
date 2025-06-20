@@ -52,4 +52,15 @@ public class TallerController {
     public ResponseEntity<Object> eliminarTaller(@PathVariable Integer id) {
         return tallerService.eliminarTaller(id);
     }
+    @GetMapping("/activos")
+    public ResponseEntity<Object> obtenerTalleresActivos() {
+        return tallerService.obtenerTalleresActivos();
+    }
+
+    @GetMapping("/inactivos")
+    public ResponseEntity<Object> obtenerTalleresInactivos() {
+        return tallerService.obtenerTalleresInactivos();
+    }
+
+
 }

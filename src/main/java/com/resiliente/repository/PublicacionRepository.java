@@ -14,4 +14,7 @@ public interface PublicacionRepository extends JpaRepository<Publicacion, Intege
     List<Publicacion> findByStatus(Boolean status);
     List<Publicacion> findByFechaPublicacionBetween(LocalDateTime inicio, LocalDateTime fin);
     List<Publicacion> findByTituloContaining(String titulo);
+
+    List<Publicacion> findByStatusOrderByFechaPublicacionDesc(Boolean status);
+    List<Publicacion> findByStatusAndTituloContainingIgnoreCase(Boolean status, String titulo);
 }

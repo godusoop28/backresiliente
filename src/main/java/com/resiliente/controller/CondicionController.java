@@ -52,4 +52,15 @@ public class CondicionController {
     public ResponseEntity<Object> eliminarCondicion(@PathVariable Integer id) {
         return condicionService.eliminarCondicion(id);
     }
+    @GetMapping("/activas")
+    public ResponseEntity<Object> obtenerCondicionesActivas() {
+        return condicionService.obtenerCondicionesActivas();
+    }
+
+    @GetMapping("/inactivas")
+    public ResponseEntity<Object> obtenerCondicionesInactivas() {
+        return condicionService.obtenerCondicionesInactivas();
+    }
+
+
 }

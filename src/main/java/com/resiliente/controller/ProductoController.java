@@ -67,4 +67,15 @@ public class ProductoController {
     public ResponseEntity<Object> eliminarProducto(@PathVariable Integer id) {
         return productoService.eliminarProducto(id);
     }
+    @GetMapping("/activos")
+    public ResponseEntity<Object> obtenerProductosActivos() {
+        return productoService.obtenerProductosActivos();
+    }
+
+    @GetMapping("/inactivos")
+    public ResponseEntity<Object> obtenerProductosInactivos() {
+        return productoService.obtenerProductosInactivos();
+    }
+
+
 }

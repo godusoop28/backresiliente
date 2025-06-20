@@ -275,4 +275,41 @@ public class MeseroService {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @Transactional(readOnly = true)
+    public ResponseEntity<Object> obtenerMeserosActivos() {
+        List<Mesero> meseros = meseroRepository.findByStatus(true);
+
+        if (meseros.isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("mensaje", "No hay meseros activos");
+            response.put("tipo", "WARNING");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("datos", meseros);
+        response.put("mensaje", "Lista de meseros activos");
+        response.put("tipo", "SUCCESS");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<Object> obtenerMeserosInactivos() {
+        List<Mesero> meseros = meseroRepository.findByStatus(false);
+
+        if (meseros.isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("mensaje", "No hay meseros inactivos");
+            response.put("tipo", "WARNING");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("datos", meseros);
+        response.put("mensaje", "Lista de meseros inactivos");
+        response.put("tipo", "SUCCESS");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
 }

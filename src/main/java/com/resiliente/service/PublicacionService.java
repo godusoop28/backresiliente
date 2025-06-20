@@ -189,4 +189,41 @@ public class PublicacionService {
         response.put("tipo", "SUCCESS");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+    @Transactional(readOnly = true)
+    public ResponseEntity<Object> obtenerPublicacionesActivas() {
+        List<Publicacion> publicaciones = publicacionRepository.findByStatus(true);
+
+        if (publicaciones.isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("mensaje", "No hay publicaciones activas");
+            response.put("tipo", "WARNING");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("datos", publicaciones);
+        response.put("mensaje", "Lista de publicaciones activas");
+        response.put("tipo", "SUCCESS");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<Object> obtenerPublicacionesInactivas() {
+        List<Publicacion> publicaciones = publicacionRepository.findByStatus(false);
+
+        if (publicaciones.isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("mensaje", "No hay publicaciones inactivas");
+            response.put("tipo", "WARNING");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("datos", publicaciones);
+        response.put("mensaje", "Lista de publicaciones inactivas");
+        response.put("tipo", "SUCCESS");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
 }
