@@ -30,47 +30,160 @@ public class ProductoService {
 
     @Transactional
     public ResponseEntity<Object> crearProducto(ProductoDto productoDto) {
-        // Verificar si ya existe un producto con el mismo código
-        if (productoRepository.existsByCodigo(productoDto.getCodigo())) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("mensaje", "Ya existe un producto con el código: " + productoDto.getCodigo());
-            response.put("tipo", "ERROR");
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
+        try {
+            System.out.println("=== SERVICIO: CREANDO PRODUCTO ===");
+            System.out.println("DTO recibido: " + productoDto.toString());
 
-        // Verificar si la seña existe (si se proporciona)
-        Sena sena = null;
-        if (productoDto.getIdSena() != null) {
-            Optional<Sena> senaOptional = senaRepository.findById(productoDto.getIdSena());
-            if (senaOptional.isEmpty()) {
-                Map<String, Object> response = new HashMap<>();
-                response.put("mensaje", "Seña no encontrada con ID: " + productoDto.getIdSena());
-                response.put("tipo", "ERROR");
-                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            // ✅ MEJORADO: Validaciones más específicas
+            if (productoDto.getNombre() == null || productoDto.getNombre().trim().isEmpty()) {
+                return crearRespuestaError("El nombre del producto es obligatorio", HttpStatus.BAD_REQUEST);
             }
-            sena = senaOptional.get();
+
+            if (productoDto.getPrecio() == null || productoDto.getPrecio().compareTo(java.math.BigDecimal.ZERO) <= 0) {
+                return crearRespuestaError("El precio debe ser mayor que cero", HttpStatus.BAD_REQUEST);
+            }
+
+            if (productoDto.getDescripcion() == null || productoDto.getDescripcion().trim().isEmpty()) {
+                return crearRespuestaError("La descripción es obligatoria", HttpStatus.BAD_REQUEST);
+            }
+
+            if (productoDto.getCodigo() == null || productoDto.getCodigo().trim().isEmpty()) {
+                return crearRespuestaError("El código es obligatorio", HttpStatus.BAD_REQUEST);
+            }
+
+            // Verificar si ya existe un producto con el mismo código
+            if (productoRepository.existsByCodigo(productoDto.getCodigo())) {
+                return crearRespuestaError("Ya existe un producto con el código: " + productoDto.getCodigo(), HttpStatus.BAD_REQUEST);
+            }
+
+            // Verificar si la seña existe (si se proporciona)
+            Sena sena = null;
+            if (productoDto.getIdSena() != null) {
+                Optional<Sena> senaOptional = senaRepository.findById(productoDto.getIdSena());
+                if (senaOptional.isEmpty()) {
+                    return crearRespuestaError("Seña no encontrada con ID: " + productoDto.getIdSena(), HttpStatus.BAD_REQUEST);
+                }
+                sena = senaOptional.get();
+            }
+
+            // Crear y guardar el nuevo producto
+            Producto producto = new Producto();
+            producto.setNombre(productoDto.getNombre().trim());
+            producto.setPrecio(productoDto.getPrecio());
+            producto.setDescripcion(productoDto.getDescripcion().trim());
+            producto.setFoto(productoDto.getFoto());
+            producto.setCategoria(productoDto.getCategoria() != null ? productoDto.getCategoria().trim() : null);
+            producto.setCodigo(productoDto.getCodigo().trim());
+            producto.setSena(sena);
+            producto.setStatus(true);
+
+            System.out.println("Producto a guardar: " + producto.toString());
+
+            Producto productoGuardado = productoRepository.save(producto);
+
+            System.out.println("✅ Producto guardado exitosamente con ID: " + productoGuardado.getId());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("datos", productoGuardado);
+            response.put("mensaje", "Producto creado exitosamente");
+            response.put("tipo", "SUCCESS");
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+
+        } catch (Exception e) {
+            System.err.println("❌ Error al crear producto: " + e.getMessage());
+            e.printStackTrace();
+            return crearRespuestaError("Error interno del servidor: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        // Crear y guardar el nuevo producto
-        Producto producto = new Producto();
-        producto.setNombre(productoDto.getNombre());
-        producto.setPrecio(productoDto.getPrecio());
-        producto.setDescripcion(productoDto.getDescripcion());
-        producto.setFoto(productoDto.getFoto());
-        producto.setCategoria(productoDto.getCategoria());
-        producto.setCodigo(productoDto.getCodigo());
-        producto.setSena(sena);
-        producto.setStatus(true);
-
-        Producto productoGuardado = productoRepository.save(producto);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("datos", productoGuardado);
-        response.put("mensaje", "Producto creado exitosamente");
-        response.put("tipo", "SUCCESS");
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @Transactional
+    public ResponseEntity<Object> actualizarProducto(Integer id, ProductoDto productoDto) {
+        try {
+            System.out.println("=== SERVICIO: ACTUALIZANDO PRODUCTO ===");
+            System.out.println("ID: " + id);
+            System.out.println("DTO recibido: " + productoDto.toString());
+
+            Optional<Producto> productoOptional = productoRepository.findById(id);
+
+            if (productoOptional.isEmpty()) {
+                return crearRespuestaError("Producto no encontrado con ID: " + id, HttpStatus.NOT_FOUND);
+            }
+
+            Producto producto = productoOptional.get();
+            System.out.println("Producto encontrado: " + producto.toString());
+
+            // ✅ MEJORADO: Validaciones más específicas
+            if (productoDto.getNombre() != null && !productoDto.getNombre().trim().isEmpty()) {
+                producto.setNombre(productoDto.getNombre().trim());
+            }
+
+            if (productoDto.getPrecio() != null && productoDto.getPrecio().compareTo(java.math.BigDecimal.ZERO) > 0) {
+                producto.setPrecio(productoDto.getPrecio());
+            }
+
+            if (productoDto.getDescripcion() != null && !productoDto.getDescripcion().trim().isEmpty()) {
+                producto.setDescripcion(productoDto.getDescripcion().trim());
+            }
+
+            if (productoDto.getFoto() != null) {
+                producto.setFoto(productoDto.getFoto());
+            }
+
+            if (productoDto.getCategoria() != null) {
+                producto.setCategoria(productoDto.getCategoria().trim());
+            }
+
+            // Verificar código único si se está cambiando
+            if (productoDto.getCodigo() != null && !producto.getCodigo().equals(productoDto.getCodigo()) &&
+                    productoRepository.existsByCodigo(productoDto.getCodigo())) {
+                return crearRespuestaError("Ya existe un producto con el código: " + productoDto.getCodigo(), HttpStatus.BAD_REQUEST);
+            }
+
+            if (productoDto.getCodigo() != null && !productoDto.getCodigo().trim().isEmpty()) {
+                producto.setCodigo(productoDto.getCodigo().trim());
+            }
+
+            if (productoDto.getStatus() != null) {
+                producto.setStatus(productoDto.getStatus());
+            }
+
+            // Verificar si la seña existe (si se proporciona)
+            if (productoDto.getIdSena() != null) {
+                Optional<Sena> senaOptional = senaRepository.findById(productoDto.getIdSena());
+                if (senaOptional.isEmpty()) {
+                    return crearRespuestaError("Seña no encontrada con ID: " + productoDto.getIdSena(), HttpStatus.BAD_REQUEST);
+                }
+                producto.setSena(senaOptional.get());
+            }
+
+            System.out.println("Producto a actualizar: " + producto.toString());
+
+            Producto productoActualizado = productoRepository.save(producto);
+
+            System.out.println("✅ Producto actualizado exitosamente");
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("datos", productoActualizado);
+            response.put("mensaje", "Producto actualizado exitosamente");
+            response.put("tipo", "SUCCESS");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+
+        } catch (Exception e) {
+            System.err.println("❌ Error al actualizar producto: " + e.getMessage());
+            e.printStackTrace();
+            return crearRespuestaError("Error interno del servidor: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // ✅ NUEVO: Método helper para crear respuestas de error
+    private ResponseEntity<Object> crearRespuestaError(String mensaje, HttpStatus status) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("mensaje", mensaje);
+        response.put("tipo", "ERROR");
+        return new ResponseEntity<>(response, status);
+    }
+
+    // ... resto de métodos sin cambios ...
     @Transactional(readOnly = true)
     public ResponseEntity<Object> obtenerProductoPorId(Integer id) {
         Optional<Producto> productoOptional = productoRepository.findById(id);
@@ -129,7 +242,6 @@ public class ProductoService {
 
     @Transactional(readOnly = true)
     public ResponseEntity<Object> obtenerProductosPorSena(Integer idSena) {
-        // Verificar si la seña existe
         if (!senaRepository.existsById(idSena)) {
             Map<String, Object> response = new HashMap<>();
             response.put("mensaje", "Seña no encontrada con ID: " + idSena);
@@ -149,58 +261,6 @@ public class ProductoService {
         Map<String, Object> response = new HashMap<>();
         response.put("datos", productos);
         response.put("mensaje", "Lista de productos por seña");
-        response.put("tipo", "SUCCESS");
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @Transactional
-    public ResponseEntity<Object> actualizarProducto(Integer id, ProductoDto productoDto) {
-        Optional<Producto> productoOptional = productoRepository.findById(id);
-
-        if (productoOptional.isEmpty()) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("mensaje", "Producto no encontrado con ID: " + id);
-            response.put("tipo", "WARNING");
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        }
-
-        Producto producto = productoOptional.get();
-
-        // Verificar si ya existe otro producto con el mismo código
-        if (productoDto.getCodigo() != null && !producto.getCodigo().equals(productoDto.getCodigo()) &&
-                productoRepository.existsByCodigo(productoDto.getCodigo())) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("mensaje", "Ya existe un producto con el código: " + productoDto.getCodigo());
-            response.put("tipo", "ERROR");
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
-
-        // Verificar si la seña existe (si se proporciona)
-        if (productoDto.getIdSena() != null) {
-            Optional<Sena> senaOptional = senaRepository.findById(productoDto.getIdSena());
-            if (senaOptional.isEmpty()) {
-                Map<String, Object> response = new HashMap<>();
-                response.put("mensaje", "Seña no encontrada con ID: " + productoDto.getIdSena());
-                response.put("tipo", "ERROR");
-                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-            }
-            producto.setSena(senaOptional.get());
-        }
-
-        // Actualizar el producto
-        if (productoDto.getNombre() != null) producto.setNombre(productoDto.getNombre());
-        if (productoDto.getPrecio() != null) producto.setPrecio(productoDto.getPrecio());
-        if (productoDto.getDescripcion() != null) producto.setDescripcion(productoDto.getDescripcion());
-        if (productoDto.getFoto() != null) producto.setFoto(productoDto.getFoto());
-        if (productoDto.getCodigo() != null) producto.setCodigo(productoDto.getCodigo());
-        if (productoDto.getCategoria() != null) producto.setCategoria(productoDto.getCategoria());
-        if (productoDto.getStatus() != null) producto.setStatus(productoDto.getStatus());
-
-        Producto productoActualizado = productoRepository.save(producto);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("datos", productoActualizado);
-        response.put("mensaje", "Producto actualizado exitosamente");
         response.put("tipo", "SUCCESS");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -296,6 +356,7 @@ public class ProductoService {
         response.put("tipo", "SUCCESS");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
     @Transactional(readOnly = true)
     public ResponseEntity<Object> obtenerProductosActivos() {
         List<Producto> productos = productoRepository.findByStatus(true);
@@ -331,6 +392,4 @@ public class ProductoService {
         response.put("tipo", "SUCCESS");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
-
 }

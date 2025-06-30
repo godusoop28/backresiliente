@@ -7,19 +7,13 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import jakarta.annotation.PostConstruct;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -46,7 +40,7 @@ public class WasabiController {
     @Value("${wasabi.bucketName}")
     private String bucketName;
 
-    // URL de tu CDN de Cloudflare
+    // ✅ CORREGIDO: URL del CDN de Cloudflare
     private static final String CDN_BASE_URL = "https://cdn.proyectoresiliente.org";
 
     @PostConstruct
@@ -58,19 +52,18 @@ public class WasabiController {
             System.out.println("Region: " + region);
             System.out.println("Endpoint: " + endpoint);
             System.out.println("Bucket: " + bucketName);
+            System.out.println("CDN URL: " + CDN_BASE_URL);
 
             this.s3Client = AmazonS3ClientBuilder.standard()
                     .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(
                             endpoint, region))
                     .withCredentials(new AWSStaticCredentialsProvider(
                             new BasicAWSCredentials(accessKey, secretKey)))
-                    .withPathStyleAccessEnabled(true) // Importante para Wasabi
+                    .withPathStyleAccessEnabled(true)
                     .build();
 
-            // Probar conexión
             System.out.println("Cliente S3 inicializado correctamente");
 
-            // Verificar si el bucket existe
             if (s3Client.doesBucketExistV2(bucketName)) {
                 System.out.println("✅ Bucket '" + bucketName + "' existe y es accesible");
             } else {
@@ -83,10 +76,11 @@ public class WasabiController {
         }
     }
 
+    // ✅ ENDPOINT CORREGIDO: Cambiado de /upload-to-wasabi a /upload
     @PostMapping("/upload")
     public ResponseEntity<Map<String, Object>> uploadFile(
             @RequestParam("file") MultipartFile file,
-            @RequestParam(value = "folder", defaultValue = "general") String folder) {
+            @RequestParam(value = "folder", defaultValue = "productos") String folder) {
 
         System.out.println("=== INICIANDO SUBIDA DE ARCHIVO ===");
         System.out.println("Archivo: " + file.getOriginalFilename());
@@ -95,32 +89,27 @@ public class WasabiController {
         System.out.println("Carpeta: " + folder);
 
         try {
-            // Validaciones
             if (file.isEmpty()) {
                 throw new RuntimeException("El archivo está vacío");
             }
 
-            // Generar nombre único para el archivo
             String originalFileName = file.getOriginalFilename();
             String fileExtension = "";
             if (originalFileName != null && originalFileName.contains(".")) {
                 fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
             }
             String uniqueFileName = UUID.randomUUID().toString() + fileExtension;
-
-            // Crear la ruta completa con carpeta
             String fullPath = folder + "/" + uniqueFileName;
+
             System.out.println("Ruta completa: " + fullPath);
 
-            // Configurar metadata
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType(file.getContentType());
             metadata.setContentLength(file.getSize());
-            metadata.setCacheControl("public, max-age=31536000"); // 1 año
+            metadata.setCacheControl("public, max-age=31536000");
 
             System.out.println("Subiendo archivo a Wasabi...");
 
-            // Subir archivo a Wasabi
             PutObjectRequest putRequest = new PutObjectRequest(
                     bucketName,
                     fullPath,
@@ -131,17 +120,15 @@ public class WasabiController {
             s3Client.putObject(putRequest);
             System.out.println("✅ Archivo subido exitosamente");
 
-            // Generar URLs
+            // ✅ IMPORTANTE: Devolver URL del CDN
             String cdnUrl = CDN_BASE_URL + "/" + fullPath;
-            String wasabiUrl = "https://" + bucketName + ".s3." + region + ".wasabisys.com/" + fullPath;
 
             System.out.println("URL CDN: " + cdnUrl);
-            System.out.println("URL Wasabi: " + wasabiUrl);
 
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
+            response.put("fileUrl", cdnUrl); // ✅ Para compatibilidad con React Native
             response.put("cdnUrl", cdnUrl);
-            response.put("wasabiUrl", wasabiUrl);
             response.put("fileName", uniqueFileName);
             response.put("originalName", originalFileName);
             response.put("folder", folder);
@@ -193,56 +180,11 @@ public class WasabiController {
         }
     }
 
-    @GetMapping("/file-info/{folder}/{fileName}")
-    public ResponseEntity<Map<String, Object>> getFileInfo(
-            @PathVariable String folder,
-            @PathVariable String fileName) {
-
-        try {
-            String fullPath = folder + "/" + fileName;
-
-            // Verificar si el archivo existe
-            boolean exists = s3Client.doesObjectExist(bucketName, fullPath);
-
-            if (!exists) {
-                Map<String, Object> errorResponse = new HashMap<>();
-                errorResponse.put("success", false);
-                errorResponse.put("error", "Archivo no encontrado");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
-            }
-
-            // Obtener metadata del archivo
-            ObjectMetadata metadata = s3Client.getObjectMetadata(bucketName, fullPath);
-
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("cdnUrl", CDN_BASE_URL + "/" + fullPath);
-            response.put("fileName", fileName);
-            response.put("folder", folder);
-            response.put("size", metadata.getContentLength());
-            response.put("contentType", metadata.getContentType());
-            response.put("lastModified", metadata.getLastModified());
-
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            System.err.println("❌ Error al obtener info del archivo: " + e.getMessage());
-            e.printStackTrace();
-
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("success", false);
-            errorResponse.put("error", e.getMessage());
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-        }
-    }
-
-    // Endpoint de prueba para verificar conectividad
     @GetMapping("/test-connection")
     public ResponseEntity<Map<String, Object>> testConnection() {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            // Probar listado de objetos (solo los primeros 5)
             var objects = s3Client.listObjects(bucketName);
 
             response.put("success", true);
@@ -250,6 +192,7 @@ public class WasabiController {
             response.put("bucketName", bucketName);
             response.put("objectCount", objects.getObjectSummaries().size());
             response.put("region", region);
+            response.put("cdnUrl", CDN_BASE_URL);
 
             return ResponseEntity.ok(response);
 

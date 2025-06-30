@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 
@@ -14,11 +15,12 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Producto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idProducto")
+    @Column(name = "id_producto")
     private Integer id;
 
     @Column(name = "nombre", nullable = false, length = 100)
@@ -42,8 +44,8 @@ public class Producto {
     @Column(name = "status", nullable = false, columnDefinition = "TINYINT DEFAULT 1")
     private Boolean status = true;
 
-    // Nueva relación directa con Sena
+    // ✅ CORREGIDO: Mapeo simplificado y consistente
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "idSena", referencedColumnName = "idSena")
+    @JoinColumn(name = "id_sena")
     private Sena sena;
 }

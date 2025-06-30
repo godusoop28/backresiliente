@@ -4,6 +4,7 @@ import com.resiliente.dto.ProductoDto;
 import com.resiliente.service.ProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,8 +19,14 @@ public class ProductoController {
         this.productoService = productoService;
     }
 
+    // ✅ AGREGADO: Validación con grupos
     @PostMapping
-    public ResponseEntity<Object> crearProducto(@RequestBody ProductoDto productoDto) {
+    public ResponseEntity<Object> crearProducto(
+            @Validated(ProductoDto.Crear.class) @RequestBody ProductoDto productoDto) {
+
+        System.out.println("=== CREANDO PRODUCTO ===");
+        System.out.println("Datos recibidos: " + productoDto.toString());
+
         return productoService.crearProducto(productoDto);
     }
 
@@ -43,8 +50,16 @@ public class ProductoController {
         return productoService.obtenerProductosPorSena(idSena);
     }
 
+    // ✅ AGREGADO: Validación con grupos
     @PutMapping("/{id}")
-    public ResponseEntity<Object> actualizarProducto(@PathVariable Integer id, @RequestBody ProductoDto productoDto) {
+    public ResponseEntity<Object> actualizarProducto(
+            @PathVariable Integer id,
+            @Validated(ProductoDto.Actualizar.class) @RequestBody ProductoDto productoDto) {
+
+        System.out.println("=== ACTUALIZANDO PRODUCTO ===");
+        System.out.println("ID: " + id);
+        System.out.println("Datos recibidos: " + productoDto.toString());
+
         return productoService.actualizarProducto(id, productoDto);
     }
 
@@ -67,6 +82,7 @@ public class ProductoController {
     public ResponseEntity<Object> eliminarProducto(@PathVariable Integer id) {
         return productoService.eliminarProducto(id);
     }
+
     @GetMapping("/activos")
     public ResponseEntity<Object> obtenerProductosActivos() {
         return productoService.obtenerProductosActivos();
@@ -76,6 +92,4 @@ public class ProductoController {
     public ResponseEntity<Object> obtenerProductosInactivos() {
         return productoService.obtenerProductosInactivos();
     }
-
-
 }
