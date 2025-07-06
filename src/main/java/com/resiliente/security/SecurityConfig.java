@@ -54,7 +54,9 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:5173",
                 "https://proyectoresiliente.org",
-                "https://www.proyectoresiliente.org"
+                "https://www.proyectoresiliente.org",
+                "exp://192.168.0.37:8081", // Para desarrollo móvil local
+                "http://192.168.0.37:8081"  // Para desarrollo móvil local
         ));
 
         // Métodos HTTP permitidos
