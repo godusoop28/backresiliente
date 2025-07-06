@@ -17,7 +17,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 import java.util.Arrays;
 
 @Configuration
@@ -44,7 +43,26 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+
+        // ✅ CONFIGURACIÓN CORS ACTUALIZADA PARA PRODUCCIÓN
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+                // Desarrollo local
+                "http://localhost:3000",
+                "http://localhost:3001",
+                "http://localhost:8080",
+                "http://localhost:8081",
+                // Tu API en Railway
+                "https://backresiliente-production.up.railway.app",
+                // Plataformas de despliegue comunes
+                "https://*.vercel.app",
+                "https://*.netlify.app",
+                "https://*.railway.app",
+                "https://*.render.com",
+                // Dominios personalizados (agregar cuando tengas)
+                "https://tu-dominio.com",
+                "https://www.tu-dominio.com"
+        ));
+
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
@@ -61,7 +79,10 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz
                         // ==================== ENDPOINTS PÚBLICOS ====================
-                        // Autenticación
+                        // Health check y root - PÚBLICO
+                        .requestMatchers("/health", "/").permitAll()
+
+                        // Autenticación - PÚBLICO
                         .requestMatchers("/auth/**").permitAll()
 
                         // Visualización pública (GET) - TODOS pueden ver
@@ -75,7 +96,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/candidatos/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/juegos/**").permitAll()
 
-                        // APIs especiales
+                        // APIs especiales - PÚBLICO
                         .requestMatchers("/api/**").permitAll() // Para Wasabi
                         .requestMatchers("/debug/**").permitAll() // Para debug
 
@@ -133,6 +154,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/candidatos/**").hasAnyRole("EMPLEADO", "ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/candidatos/**").hasAnyRole("EMPLEADO", "ADMIN")
 
+                        // Gestión de juegos (CUD) - EMPLEADO y ADMIN
                         .requestMatchers(HttpMethod.POST, "/juegos/**").hasAnyRole("EMPLEADO", "ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/juegos/**").hasAnyRole("EMPLEADO", "ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/juegos/**").hasAnyRole("EMPLEADO", "ADMIN")
@@ -145,7 +167,6 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 }
