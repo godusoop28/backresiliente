@@ -27,44 +27,41 @@ public class DataInitializer {
             PasswordEncoder passwordEncoder
     ) {
         return args -> {
+            try {
             // ==================== ROLES ====================
-            Rol adminRole = new Rol("ADMIN");
-            Rol empleadoRole = new Rol("EMPLEADO");
-            if (rolRepository.findByNombre("ADMIN").isEmpty()) {
-                rolRepository.saveAndFlush(adminRole);
-            } else {
-                adminRole = rolRepository.findByNombre("ADMIN").get();
-            }
-            if (rolRepository.findByNombre("EMPLEADO").isEmpty()) {
-                rolRepository.saveAndFlush(empleadoRole);
-            } else {
-                empleadoRole = rolRepository.findByNombre("EMPLEADO").get();
-            }
+            Rol adminRole = rolRepository.findByNombre("ADMIN")
+                    .orElseGet(() -> rolRepository.save(new Rol("ADMIN")));
+
+            Rol empleadoRole = rolRepository.findByNombre("EMPLEADO")
+                    .orElseGet(() -> rolRepository.save(new Rol("EMPLEADO")));
 
             // ==================== USUARIOS ====================
-            if (usuarioRepository.findByEmail("admin@resiliente.com").isEmpty()) {
+            String adminEmail = "direccion@proyectoresiliente.org";
+            if (usuarioRepository.findByEmail(adminEmail).isEmpty()) {
                 Usuario admin = new Usuario();
                 admin.setNombre("Marco");
                 admin.setApellido("Santos");
                 admin.setRol(adminRole);
                 admin.setNumeroEmpleado(1001);
                 admin.setArea("Administración");
-                admin.setEmail("direccion@proyectoresiliente.org");
+                admin.setEmail(adminEmail);
                 admin.setPassword(passwordEncoder.encode("admin123"));
                 admin.setStatus(true);
-                usuarioRepository.saveAndFlush(admin);
+                usuarioRepository.save(admin);
             }
-            if (usuarioRepository.findByEmail("empleado@resiliente.com").isEmpty()) {
+
+            String empleadoEmail = "empleado@resiliente.com";
+            if (usuarioRepository.findByEmail(empleadoEmail).isEmpty()) {
                 Usuario empleado = new Usuario();
                 empleado.setNombre("Empleado");
                 empleado.setApellido("Resiliente");
                 empleado.setRol(empleadoRole);
                 empleado.setNumeroEmpleado(2001);
                 empleado.setArea("Operaciones");
-                empleado.setEmail("empleado@resiliente.com");
+                empleado.setEmail(empleadoEmail);
                 empleado.setPassword(passwordEncoder.encode("empleado123"));
                 empleado.setStatus(true);
-                usuarioRepository.saveAndFlush(empleado);
+                usuarioRepository.save(empleado);
             }
 
             // ==================== CONDICIONES ====================
@@ -375,6 +372,10 @@ public class DataInitializer {
                 producto5.setCaracteristicas("Tarjeta regalo de $25, válida por 1 año");
                 producto5.setImagen("https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=400&fit=crop");
                 productoTiendaRepository.saveAndFlush(producto5);
+            }
+            } catch (Exception e) {
+                System.err.println("Error durante la inicialización de datos: " + e.getMessage());
+                e.printStackTrace();
             }
         };
     }
