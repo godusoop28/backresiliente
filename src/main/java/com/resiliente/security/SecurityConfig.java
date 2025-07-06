@@ -102,7 +102,13 @@ public class SecurityConfig {
                 // Configuración de autorización
                 .authorizeHttpRequests(authz -> authz
                         // Endpoints públicos
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/test-connection").permitAll() // Para pruebas
+                        .requestMatchers(HttpMethod.POST, "/api/upload").hasAnyRole("ADMIN", "EDITOR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/delete/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
                         .requestMatchers(
+
                                 "/",
                                 "/health",
                                 "/auth/**",
