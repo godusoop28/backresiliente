@@ -17,21 +17,24 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-    @Autowired
-    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtRequestFilter jwtRequestFilter;
 
     @Autowired
-    private JwtRequestFilter jwtRequestFilter;
+    public SecurityConfig(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
+                          JwtRequestFilter jwtRequestFilter) {
+        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
+        this.jwtRequestFilter = jwtRequestFilter;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -42,48 +45,45 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**") // aplica a todos los endpoints
-                        .allowedOrigins("http://localhost:5173", "https://tusitio.com") // pon aquí tus dominios frontend
-                        .allowedMethods("*")
-                        .allowedHeaders("*")
-                        .allowCredentials(true);
-            }
-        };
-    }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // ✅ CONFIGURACIÓN CORS ACTUALIZADA PARA PRODUCCIÓN
-        configuration.setAllowedOriginPatterns(Arrays.asList(
-                // Desarrollo local
-                "*",
+        // Configuración de orígenes permitidos
+        configuration.setAllowedOrigins(List.of(
                 "http://localhost:5173",
-                "http://localhost:3000",
-                "http://localhost:3001",
-                "http://localhost:8080",
-                "http://localhost:8081",
-                // Tu API en Railway
-                "https://backresiliente-production.up.railway.app",
-                // Plataformas de despliegue comunes
-                "https://*.vercel.app",
-                "https://*.netlify.app",
-                "https://*.railway.app",
-                "https://*.render.com",
-                // Dominios personalizados (agregar cuando tengas)
-                "https://tu-dominio.com",
-                "https://www.tu-dominio.com"
+                "https://proyectoresiliente.org",
+                "https://www.proyectoresiliente.org"
         ));
 
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        // Métodos HTTP permitidos
+        configuration.setAllowedMethods(Arrays.asList(
+                HttpMethod.GET.name(),
+                HttpMethod.POST.name(),
+                HttpMethod.PUT.name(),
+                HttpMethod.PATCH.name(),
+                HttpMethod.DELETE.name(),
+                HttpMethod.OPTIONS.name()
+        ));
+
+        // Headers permitidos
+        configuration.setAllowedHeaders(Arrays.asList(
+                "Authorization",
+                "Content-Type",
+                "Accept",
+                "X-Requested-With",
+                "Cache-Control"
+        ));
+
+        // Headers expuestos
+        configuration.setExposedHeaders(Arrays.asList(
+                "Authorization",
+                "Content-Disposition"
+        ));
+
         configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L);
+        configuration.setMaxAge(3600L); // 1 hora
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -92,98 +92,68 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        http
+                // Configuración CORS
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+                // Deshabilitar CSRF (no necesario para APIs stateless con JWT)
                 .csrf(csrf -> csrf.disable())
+
+                // Configuración de autorización
                 .authorizeHttpRequests(authz -> authz
-                        // ==================== ENDPOINTS PÚBLICOS ====================
-                        // Health check y root - PÚBLICO
-                        .requestMatchers("/health", "/").permitAll()
+                        // Endpoints públicos
+                        .requestMatchers(
+                                "/",
+                                "/health",
+                                "/auth/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
 
-                        // Autenticación - PÚBLICO
-                        .requestMatchers("/auth/**").permitAll()
+                        // Todos los GET son públicos
+                        .requestMatchers(HttpMethod.GET, "/**").permitAll()
 
-                        // Visualización pública (GET) - TODOS pueden ver
-                        .requestMatchers(HttpMethod.GET, "/productos/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/productos-tienda/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/meseros/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/talleres/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/publicaciones/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/senas/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/condiciones/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/candidatos/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/juegos/**").permitAll()
+                        // Endpoints de administración
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
 
-                        // APIs especiales - PÚBLICO
-                        .requestMatchers("/api/**").permitAll() // Para Wasabi
-                        .requestMatchers("/debug/**").permitAll() // Para debug
+                        // Endpoints de gestión (requieren autenticación)
+                        .requestMatchers(
+                                "/usuarios/**",
+                                "/roles/**"
+                        ).hasRole("ADMIN")
 
-                        // ==================== SOLO ADMIN ====================
-                        // Gestión de usuarios y roles - SOLO ADMIN
-                        .requestMatchers("/usuarios/**").hasRole("ADMIN")
-                        .requestMatchers("/roles/**").hasRole("ADMIN")
+                        // Operaciones de escritura para empleados y admin
+                        .requestMatchers(
+                                HttpMethod.POST, "/**"
+                        ).hasAnyRole("EMPLEADO", "ADMIN")
+                        .requestMatchers(
+                                HttpMethod.PUT, "/**"
+                        ).hasAnyRole("EMPLEADO", "ADMIN")
+                        .requestMatchers(
+                                HttpMethod.PATCH, "/**"
+                        ).hasAnyRole("EMPLEADO", "ADMIN")
+                        .requestMatchers(
+                                HttpMethod.DELETE, "/**"
+                        ).hasAnyRole("EMPLEADO", "ADMIN")
 
-                        // ==================== EMPLEADO Y ADMIN ====================
-                        // Gestión de productos (CUD) - EMPLEADO y ADMIN
-                        .requestMatchers(HttpMethod.POST, "/productos/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/productos/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/productos/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/productos/**").hasAnyRole("EMPLEADO", "ADMIN")
-
-                        // Gestión de productos tienda (CUD) - EMPLEADO y ADMIN
-                        .requestMatchers(HttpMethod.POST, "/productos-tienda/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/productos-tienda/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/productos-tienda/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/productos-tienda/**").hasAnyRole("EMPLEADO", "ADMIN")
-
-                        // Gestión de meseros (CUD) - EMPLEADO y ADMIN
-                        .requestMatchers(HttpMethod.POST, "/meseros/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/meseros/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/meseros/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/meseros/**").hasAnyRole("EMPLEADO", "ADMIN")
-
-                        // Gestión de talleres (CUD) - EMPLEADO y ADMIN
-                        .requestMatchers(HttpMethod.POST, "/talleres/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/talleres/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/talleres/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/talleres/**").hasAnyRole("EMPLEADO", "ADMIN")
-
-                        // Gestión de publicaciones (CUD) - EMPLEADO y ADMIN
-                        .requestMatchers(HttpMethod.POST, "/publicaciones/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/publicaciones/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/publicaciones/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/publicaciones/**").hasAnyRole("EMPLEADO", "ADMIN")
-
-                        // Gestión de señas (CUD) - EMPLEADO y ADMIN
-                        .requestMatchers(HttpMethod.POST, "/senas/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/senas/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/senas/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/senas/**").hasAnyRole("EMPLEADO", "ADMIN")
-
-                        // Gestión de condiciones (CUD) - EMPLEADO y ADMIN
-                        .requestMatchers(HttpMethod.POST, "/condiciones/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/condiciones/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/condiciones/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/condiciones/**").hasAnyRole("EMPLEADO", "ADMIN")
-
-                        // Gestión de candidatos (CUD) - EMPLEADO y ADMIN
-                        .requestMatchers(HttpMethod.POST, "/candidatos/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/candidatos/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/candidatos/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/candidatos/**").hasAnyRole("EMPLEADO", "ADMIN")
-
-                        // Gestión de juegos (CUD) - EMPLEADO y ADMIN
-                        .requestMatchers(HttpMethod.POST, "/juegos/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/juegos/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/juegos/**").hasAnyRole("EMPLEADO", "ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/juegos/**").hasAnyRole("EMPLEADO", "ADMIN")
-
-                        // Cualquier otra solicitud requiere autenticación
+                        // Todas las demás solicitudes requieren autenticación
                         .anyRequest().authenticated()
                 )
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
+                // Manejo de excepciones
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                )
+
+                // Configuración de sesión (stateless)
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                );
+
+        // Añadir filtro JWT
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 }
