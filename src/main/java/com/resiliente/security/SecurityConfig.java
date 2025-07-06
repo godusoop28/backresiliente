@@ -47,6 +47,7 @@ public class SecurityConfig {
         // ✅ CONFIGURACIÓN CORS ACTUALIZADA PARA PRODUCCIÓN
         configuration.setAllowedOriginPatterns(Arrays.asList(
                 // Desarrollo local
+                "*",
                 "http://localhost:5173",
                 "http://localhost:3000",
                 "http://localhost:3001",
