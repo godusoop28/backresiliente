@@ -15,6 +15,17 @@ public class HealthController {
         response.put("message", "API Resiliente funcionando correctamente");
         response.put("timestamp", java.time.Instant.now().toString());
         response.put("version", "1.0.0");
+        response.put("environment", System.getenv("RAILWAY_ENVIRONMENT"));
+        return response;
+    }
+
+    // Endpoint adicional para Railway
+    @GetMapping("/")
+    public Map<String, Object> root() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("service", "API Resiliente");
+        response.put("status", "Running");
+        response.put("docs", "/health para health check");
         return response;
     }
 }
