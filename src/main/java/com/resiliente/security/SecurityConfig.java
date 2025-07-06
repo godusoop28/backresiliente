@@ -84,7 +84,7 @@ public class SecurityConfig {
                 "Content-Disposition"
         ));
 
-        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(false);
         configuration.setMaxAge(3600L); // 1 hora
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
