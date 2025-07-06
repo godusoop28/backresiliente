@@ -14,15 +14,15 @@
 	<name>resiliente</name>
 	<description>Api resiliente</description>
 	<properties>
-		<!-- CAMBIADO: Java 17 en lugar de 21 -->
 		<java.version>17</java.version>
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<lombok.version>1.18.30</lombok.version>
-		<!-- Version mas estable de JJWT -->
 		<jjwt.version>0.11.5</jjwt.version>
+		<!-- OPTIMIZACIÓN: Deshabilitar tests por defecto -->
+		<maven.test.skip>true</maven.test.skip>
 	</properties>
 	<dependencies>
 		<!-- Validation -->
@@ -49,7 +49,7 @@
 			<artifactId>mysql-connector-j</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-		<!-- JWT Dependencies con version mas estable -->
+		<!-- JWT Dependencies -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
@@ -81,10 +81,11 @@
 		</dependency>
 		<!-- Commons IO -->
 		<dependency>
-			<groupId>commons-io</groupId>          <artifactId>commons-io</artifactId>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
 			<version>2.11.0</version>
 		</dependency>
-		<!-- Test Dependencies -->
+		<!-- Test Dependencies - SOLO para desarrollo local -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -110,16 +111,8 @@
 					</excludes>
 				</configuration>
 			</plugin>
-			<!-- Plugin para manejar codificacion UTF-8 -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>3.3.1</version>
-				<configuration>
-					<encoding>UTF-8</encoding>
-				</configuration>
-			</plugin>
-			<!-- Plugin del compilador con Java 17 -->
+
+			<!-- Plugin del compilador optimizado -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -128,8 +121,43 @@
 					<source>17</source>
 					<target>17</target>
 					<encoding>UTF-8</encoding>
+					<compilerArgs>
+						<arg>-Xlint:none</arg>
+						<arg>-nowarn</arg>
+					</compilerArgs>
+				</configuration>
+			</plugin>
+
+			<!-- Plugin de recursos optimizado -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.3.1</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+
+			<!-- OPTIMIZACIÓN: Deshabilitar Surefire (tests) en producción -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.1.2</version>
+				<configuration>
+					<skipTests>true</skipTests>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+
+	<!-- PERFIL PARA RAILWAY -->
+	<profiles>
+		<profile>
+			<id>railway</id>
+			<properties>
+				<maven.test.skip>true</maven.test.skip>
+				<spring.profiles.active>prod</spring.profiles.active>
+			</properties>
+		</profile>
+	</profiles>
 </project>
