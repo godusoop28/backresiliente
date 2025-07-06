@@ -19,13 +19,13 @@ public class HealthController {
         return response;
     }
 
-    // Endpoint adicional para Railway
     @GetMapping("/")
     public Map<String, Object> root() {
         Map<String, Object> response = new HashMap<>();
         response.put("service", "API Resiliente");
         response.put("status", "Running");
-        response.put("docs", "/health para health check");
+        response.put("health", "/health");
+        response.put("api", "/api/test-connection");
         return response;
     }
 }
