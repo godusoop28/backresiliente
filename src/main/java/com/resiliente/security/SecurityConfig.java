@@ -52,6 +52,7 @@ public class SecurityConfig {
 
         // Configuración de orígenes permitidos
         configuration.setAllowedOrigins(List.of(
+                "https://webresiliente.pages.dev",
                 "http://localhost:5173",
                 "https://proyectoresiliente.org",
                 "https://www.proyectoresiliente.org",
