@@ -51,17 +51,14 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // Configuración de orígenes permitidos
-        configuration.setAllowedOrigins(List.of(
+        configuration.setAllowedOriginPatterns(List.of(
                 "https://webresiliente.pages.dev",
-                "http://localhost:5173",
                 "https://proyectoresiliente.org",
                 "https://www.proyectoresiliente.org",
-                "http://localhost:*",
-                "exp://*",
-                "http://*",
-                "https://*",
-                "exp://192.168.0.37:8081", // Para desarrollo móvil local
-                "http://192.168.0.37:8081"  // Para desarrollo móvil local
+                "http://localhost:[*]",          // Cualquier puerto localhost
+                "exp://[*].[*].[*].[*]:[*]",     // Cualquier dirección IP para Expo
+                "http://192.168.[*].[*]:[*]",    // Cualquier IP local y puerto
+                "exp://192.168.0.37:8081"       // IP específica para desarrollo
         ));
 
         // Métodos HTTP permitidos
