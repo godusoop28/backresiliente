@@ -56,6 +56,10 @@ public class SecurityConfig {
                 "http://localhost:5173",
                 "https://proyectoresiliente.org",
                 "https://www.proyectoresiliente.org",
+                "http://localhost:*",
+                "exp://*",
+                "http://*",
+                "https://*",
                 "exp://192.168.0.37:8081", // Para desarrollo móvil local
                 "http://192.168.0.37:8081"  // Para desarrollo móvil local
         ));
